@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["**/server/*"], "message": "The app renders the Report the API returns. Only the mock API and stories may run /server." }] }]
+      }
+    },
+    {
+      "files": ["src/mocks/**", "src/stories/**"],
+      "rules": { "no-restricted-imports": "off" }
+    }
+  ]
+}
