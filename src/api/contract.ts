@@ -1,9 +1,15 @@
 // The reports API contract. The back end does every calculation (windows, metrics, score,
 // shared chart scales) and returns a finished Report; the front end only formats and draws it.
 //
-//   POST /api/reports        GenerateReportRequest  generate and save the signed-in user's report
-//                            201 Report (Location: /api/reports/:handle) · 401 not signed in · 422 bad cut-off
-//   GET  /api/reports/:handle                       a saved report · 200 Report · 404 not generated yet
+// Paths are relative to the API base (VITE_API_URL, e.g. https://shift-api.developkerr.com/api).
+//
+//   POST /reports         GenerateReportRequest  generate and save the signed-in user's report
+//                         201 Report (Location) · 401 signed out · 422 bad cut-off · 503 GitHub still computing stats
+//   GET  /reports/:handle                        200 Report · 404 not generated yet
+//   GET  /sample-report                          200 Report, the public demo (isSample: true)
+//   GET  /session                                200 Session · 401 signed out
+//   GET  /auth/sign-in?returnUrl=/path           full-page redirect to GitHub, then back to returnUrl on the front end
+//   POST /auth/sign-out                          204
 //
 // Errors are { message: string }. Dates are ISO strings: YYYY-MM-DD for days, full ISO for
 // timestamps. Shares are fractions 0–1 unless noted.
@@ -138,6 +144,10 @@ export interface Report {
 export interface GenerateReportRequest {
   /** YYYY-MM-DD; omitted = the default cut-off. The API names it. */
   cutoff?: string
+}
+
+export interface Session {
+  handle: string
 }
 
 export interface ApiErrorBody {

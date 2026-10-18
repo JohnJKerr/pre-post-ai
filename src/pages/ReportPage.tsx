@@ -1,18 +1,21 @@
-import { Link, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { isStatus } from '../api/reports'
-import { mockSessionHandle } from '../api/session'
-import { useGenerateReport, useReport } from '../api/useReports'
+import { useGenerateReport, useReport, useSession, useSignOut } from '../api/useReports'
 import { Invite } from '../features/invite/Invite'
 import { ReportSkeleton } from '../features/report/ReportSkeleton'
 import { ReportView } from '../features/report/ReportView'
 import { reportUrl } from '../features/share/links'
+import { LoadError } from './LoadError'
 
 /** A saved report, or an invite to send them if they haven't made one. Yours gets a cut-off picker. */
 export function ReportPage() {
   const { handle = '' } = useParams()
+  const navigate = useNavigate()
   const { data: report, error, isPending, refetch } = useReport(handle)
+  const { data: session } = useSession()
   const generate = useGenerateReport()
-  const isOwner = mockSessionHandle()?.toLowerCase() === handle.toLowerCase()
+  const signOut = useSignOut()
+  const isOwner = session?.handle.toLowerCase() === handle.toLowerCase()
 
   if (isPending || generate.isPending) return <ReportSkeleton />
   if (isStatus(error, 404)) return <Invite handle={handle} link={reportUrl(handle)} />
@@ -24,18 +27,7 @@ export function ReportPage() {
       link={reportUrl(report.handle)}
       onCutoffChange={isOwner ? (c) => generate.mutate({ cutoff: c.date }) : undefined}
       cutoffError={generate.error?.message}
+      onSignOut={isOwner ? () => signOut.mutate(undefined, { onSuccess: () => navigate('/') }) : undefined}
     />
-  )
-}
-
-function LoadError({ message, onRetry }: { message: string; onRetry: () => void }) {
-  return (
-    <div data-theme="now" className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-20 font-now">
-      <div role="alert" className="alert alert-error">Couldn’t load this report. {message}</div>
-      <div className="flex gap-2">
-        <button type="button" className="btn btn-neutral" onClick={onRetry}>Try again</button>
-        <Link to="/" className="btn btn-ghost">Home</Link>
-      </div>
-    </div>
   )
 }

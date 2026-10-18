@@ -1,5 +1,4 @@
 import { Link } from 'react-router'
-import { SAMPLE_HANDLE } from '../api/reports'
 
 export function NotFoundPage({ message = 'There’s nothing at this address.' }: { message?: string }) {
   return (
@@ -8,7 +7,7 @@ export function NotFoundPage({ message = 'There’s nothing at this address.' }:
       <h1 className="text-4xl font-extrabold tracking-tight">{message}</h1>
       <div className="flex gap-2">
         <Link to="/" className="btn btn-neutral">Make your own report</Link>
-        <Link to={`/r/${SAMPLE_HANDLE}`} className="btn btn-ghost">See a sample</Link>
+        <Link to="/sample" className="btn btn-ghost">See a sample</Link>
       </div>
     </div>
   )

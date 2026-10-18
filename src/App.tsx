@@ -1,15 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createBrowserRouter, RouterProvider } from 'react-router'
+import { GeneratePage } from './pages/GeneratePage'
 import { HomePage } from './pages/HomePage'
 import { ReportSkeleton } from './features/report/ReportSkeleton'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: (count, error) => count < 2 && !('status' in error && [401, 404, 422].includes(error.status as number)) } },
+  defaultOptions: { queries: { retry: (count, error) => count < 2 && !('status' in error && [401, 404, 422, 503].includes(error.status as number)) } },
 })
 
 const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
+  // sign-in returns here
+  { path: '/generate', element: <GeneratePage /> },
+  {
+    path: '/sample',
+    lazy: async () => ({ Component: (await import('./pages/SamplePage')).SamplePage }),
+    hydrateFallbackElement: <ReportSkeleton />,
+  },
   // the report pages carry the charts and share cards, so they load only when needed
   {
     path: '/r/:handle',

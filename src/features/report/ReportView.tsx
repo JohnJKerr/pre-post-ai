@@ -18,9 +18,11 @@ interface ReportViewProps {
   onCutoffChange?: (cutoff: Cutoff) => void
   /** why the last cut-off change failed */
   cutoffError?: string
+  /** only on your own report */
+  onSignOut?: () => void
 }
 
-export function ReportView({ report, link, onCutoffChange, cutoffError }: ReportViewProps) {
+export function ReportView({ report, link, onCutoffChange, cutoffError, onSignOut }: ReportViewProps) {
   const [share, setShare] = useState<ShareSettings>(() => ({ size: 'wide', showHandle: true, text: shareText(report) }))
   const cardRef = useRef<HTMLDivElement>(null)
   const { download, busy } = useCardDownload(cardRef, `prepost-${report.handle}-${share.size}.png`)
@@ -34,6 +36,7 @@ export function ReportView({ report, link, onCutoffChange, cutoffError }: Report
         onDownload={download}
         downloading={busy}
         onCopyLink={() => navigator.clipboard.writeText(link)}
+        onSignOut={onSignOut}
       />
       <Summary report={report} onCutoffChange={onCutoffChange} cutoffError={cutoffError} />
       <Comparison report={report} />

@@ -1,13 +1,15 @@
 // Mock reports API. Runs the reference calculations in /server against seeded sample
 // activity in place of GitHub, and keeps each user's activity in this browser's localStorage.
-// The contract is in src/api/contract.ts. Sign-in is a cookie naming the handle (see src/api/session.ts).
+// The contract is in src/api/contract.ts. Sign-in is a cookie naming the handle (see ./session.ts):
+// GET /auth/sign-in is a full-page redirect to GitHub, which a service worker can't stand in for.
 import { delay, http, HttpResponse } from 'msw'
+import { API_URL } from '../api/config'
 import type { GenerateReportRequest } from '../api/contract'
-import { SESSION_COOKIE } from '../api/session'
+import { mockSignOut, SESSION_COOKIE } from './session'
 import { DEFAULT_CUTOFF, PRESET_CUTOFFS } from '../../server/cutoffs'
 import { sampleProfile } from '../../server/fixture'
 import { buildReport } from '../../server/report'
-import { generateSample, SAMPLE_HANDLE, seedFrom } from '../../server/sample'
+import { generateSample, seedFrom } from '../../server/sample'
 import type { ProfileData } from '../../server/types'
 import { isoDate, windowsFor } from '../../server/windows'
 
@@ -16,7 +18,6 @@ const memory = new Map<string, ProfileData>()
 const keyOf = (handle: string) => handle.toLowerCase()
 
 function load(handle: string): ProfileData | undefined {
-  if (keyOf(handle) === SAMPLE_HANDLE) return sampleProfile()
   try {
     const raw = localStorage.getItem(KEY + keyOf(handle))
     if (raw) return JSON.parse(raw)
@@ -39,7 +40,21 @@ const error = (status: number, message: string) => HttpResponse.json({ message }
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
 
 export const handlers = [
-  http.post('/api/reports', async ({ request, cookies }) => {
+  http.get(`${API_URL}/session`, ({ cookies }) =>
+    cookies[SESSION_COOKIE] ? HttpResponse.json({ handle: cookies[SESSION_COOKIE] }) : error(401, 'You’re not signed in.'),
+  ),
+
+  http.post(`${API_URL}/auth/sign-out`, () => {
+    mockSignOut()
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  http.get(`${API_URL}/sample-report`, async () => {
+    await delay(250)
+    return HttpResponse.json(buildReport(sampleProfile()))
+  }),
+
+  http.post(`${API_URL}/reports`, async ({ request, cookies }) => {
     const handle = cookies[SESSION_COOKIE]
     if (!handle) return error(401, 'Connect GitHub to make your report')
 
@@ -61,10 +76,10 @@ export const handlers = [
       ...generateSample({ seed: seedFrom(`${keyOf(handle)}:${cutoff.date}`), cutoffWeekStart: isoDate(windows.cutoffWeekStart), weeks: windows.weeks }),
     }
     save(profile)
-    return HttpResponse.json(buildReport(profile), { status: 201, headers: { Location: `/api/reports/${encodeURIComponent(handle)}` } })
+    return HttpResponse.json(buildReport(profile), { status: 201, headers: { Location: `${API_URL}/reports/${encodeURIComponent(handle)}` } })
   }),
 
-  http.get('/api/reports/:handle', async ({ params }) => {
+  http.get(`${API_URL}/reports/:handle`, async ({ params }) => {
     await delay(250)
     const profile = load(String(params.handle))
     // built on read, so rule changes reach saved reports

@@ -1,32 +1,32 @@
 // Someone's saved report at /r/:handle, against the mock API with per-story overrides.
 import { delay, http, HttpResponse } from 'msw'
 import preview from '../../.storybook/preview'
-import { SAMPLE_HANDLE } from '../api/reports'
-import { mockSignIn, SESSION_COOKIE } from '../api/session'
+import { API_URL } from '../api/config'
 import { scenarioReport } from '../stories/scenarios'
 import { ReportPage } from './ReportPage'
 
 const meta = preview.meta({
   title: 'Pages/Report',
   component: ReportPage,
-  parameters: { route: `/r/${SAMPLE_HANDLE}`, path: '/r/:handle' },
+  parameters: { route: '/r/steady-dev', path: '/r/:handle' },
 })
 
-/** The seeded sample, served by the app's mock handlers. */
-export const Loaded = meta.story({})
+const serve = (args: Parameters<typeof scenarioReport>[0]) =>
+  http.get(`${API_URL}/reports/:handle`, () => HttpResponse.json(scenarioReport({ isSample: false, ...args })))
+const signedInAs = (handle: string) => http.get(`${API_URL}/session`, () => HttpResponse.json({ handle }))
 
-const yours = http.get('/api/reports/:handle', () => HttpResponse.json(scenarioReport({ handle: 'you', isSample: false })))
-function signInAsYou() {
-  mockSignIn('you')
-  return () => void (document.cookie = `${SESSION_COOKIE}=; path=/; max-age=0`)
-}
+/** Someone else's report: no cut-off picker, no sign-out. */
+export const Loaded = meta.story({
+  beforeEach({ msw }) {
+    msw.use(serve({ handle: 'steady-dev' }))
+  },
+})
 
-/** Your own report: the cut-off picker appears, and changing it POSTs /api/reports. */
+/** Your own report: the cut-off picker and sign-out appear. Changing the cut-off POSTs /reports. */
 export const Yours = meta.story({
   parameters: { route: '/r/you' },
   beforeEach({ msw }) {
-    msw.use(yours)
-    return signInAsYou()
+    msw.use(serve({ handle: 'you' }), signedInAs('you'))
   },
 })
 
@@ -34,8 +34,11 @@ export const Yours = meta.story({
 export const CutoffChangeFails = meta.story({
   parameters: { route: '/r/you' },
   beforeEach({ msw }) {
-    msw.use(yours, http.post('/api/reports', () => HttpResponse.json({ message: 'No complete weeks since that cut-off yet' }, { status: 422 })))
-    return signInAsYou()
+    msw.use(
+      serve({ handle: 'you' }),
+      signedInAs('you'),
+      http.post(`${API_URL}/reports`, () => HttpResponse.json({ message: 'Pick a cut-off at least one full week ago, so there’s a week to compare.' }, { status: 422 })),
+    )
   },
 })
 
@@ -43,13 +46,13 @@ export const CutoffChangeFails = meta.story({
 export const WithPrivateRepos = meta.story({
   parameters: { route: '/r/work-dev' },
   beforeEach({ msw }) {
-    msw.use(http.get('/api/reports/:handle', () => HttpResponse.json(scenarioReport({ handle: 'work-dev', isSample: false, privateRepos: true }))))
+    msw.use(serve({ handle: 'work-dev', privateRepos: true }))
   },
 })
 
 export const Loading = meta.story({
   beforeEach({ msw }) {
-    msw.use(http.get('/api/reports/:handle', () => delay('infinite')))
+    msw.use(http.get(`${API_URL}/reports/:handle`, () => delay('infinite')))
   },
 })
 
@@ -58,6 +61,6 @@ export const NotGeneratedYet = meta.story({ parameters: { route: '/r/octocat' } 
 
 export const ServerError = meta.story({
   beforeEach({ msw }) {
-    msw.use(http.get('/api/reports/:handle', () => HttpResponse.json({ message: 'Upstream GitHub error' }, { status: 502 })))
+    msw.use(http.get(`${API_URL}/reports/:handle`, () => HttpResponse.json({ message: 'Upstream GitHub error' }, { status: 502 })))
   },
 })
