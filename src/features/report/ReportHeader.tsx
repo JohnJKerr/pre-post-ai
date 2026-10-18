@@ -10,10 +10,9 @@ interface ReportHeaderProps {
   onDownload: () => void
   downloading?: boolean
   onCopyLink: () => Promise<void>
-  onSignOut?: () => void
 }
 
-export function ReportHeader({ handle, isSample, sharePanel, onDownload, downloading, onCopyLink, onSignOut }: ReportHeaderProps) {
+export function ReportHeader({ handle, isSample, sharePanel, onDownload, downloading, onCopyLink }: ReportHeaderProps) {
   const shareRef = useRef<HTMLDetailsElement>(null)
   const [toast, setToast] = useState<string | null>(null)
 
@@ -74,9 +73,6 @@ export function ReportHeader({ handle, isSample, sharePanel, onDownload, downloa
             <svg {...icon}><path d="M7.5 10.5l3-3M8 5l1.3-1.3a2.9 2.9 0 014.1 4.1L12 9.2M10 13l-1.3 1.3a2.9 2.9 0 01-4.1-4.1L6 8.8" /></svg>
           </button>
         </div>
-        {onSignOut && (
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onSignOut}>Sign out</button>
-        )}
       </nav>
       {toast && (
         <div className="toast toast-end toast-top top-14 z-50" role="status">

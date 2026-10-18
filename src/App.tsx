@@ -1,18 +1,20 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { GeneratePage } from './pages/GeneratePage'
+import { GeneratingPage } from './pages/GeneratingPage'
 import { HomePage } from './pages/HomePage'
 import { ReportSkeleton } from './features/report/ReportSkeleton'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: (count, error) => count < 2 && !('status' in error && [401, 404, 422, 503].includes(error.status as number)) } },
+  defaultOptions: { queries: { retry: (count, error) => count < 2 && !('status' in error && [404].includes(error.status as number)) } },
 })
 
 const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
-  // sign-in returns here
-  { path: '/generate', element: <GeneratePage /> },
+  // the API sends a bad cut-off back here, with ?error=
+  { path: '/generate', element: <HomePage /> },
+  // sign-in lands here, with ?id= for the generation to poll
+  { path: '/generating', element: <GeneratingPage /> },
   {
     path: '/sample',
     lazy: async () => ({ Component: (await import('./pages/SamplePage')).SamplePage }),

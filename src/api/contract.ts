@@ -2,17 +2,19 @@
 // shared chart scales) and returns a finished Report; the front end only formats and draws it.
 //
 // Paths are relative to the API base (VITE_API_URL, e.g. https://shift-api.developkerr.com/api).
+// There is no session: every call is a plain GET without credentials.
 //
-//   POST /reports         GenerateReportRequest  generate and save the signed-in user's report
-//                         201 Report (Location) · 401 signed out · 422 bad cut-off · 503 GitHub still computing stats
-//   GET  /reports/:handle                        200 Report · 404 not generated yet
-//   GET  /sample-report                          200 Report, the public demo (isSample: true)
-//   GET  /session                                200 Session · 401 signed out
-//   GET  /auth/sign-in?returnUrl=/path           full-page redirect to GitHub, then back to returnUrl on the front end
-//   POST /auth/sign-out                          204
+//   GET /auth/sign-in?cutoff=YYYY-MM-DD   full-page navigation (not a fetch) to GitHub. Lands back on
+//                                         /generating?id=…  generating
+//                                         /generate?error=… SignInError, a bad cut-off (GitHub not visited)
+//                                         /                 sign-in failed or cancelled
+//                                         GitHub's install page, when the app isn't installed
+//   GET /generations/:id                  200 Generation · 404 unknown id. Poll every 2 s while pending.
+//   GET /reports/:handle                  200 Report · 404 not generated yet. Handle is case-insensitive.
+//   GET /sample-report                    200 Report, the public demo (isSample: true)
 //
-// Errors are { message: string }. Dates are ISO strings: YYYY-MM-DD for days, full ISO for
-// timestamps. Shares are fractions 0–1 unless noted.
+// Errors are { message: string }, written to be shown as they are. Dates are ISO strings:
+// YYYY-MM-DD for days, full ISO for timestamps. Shares are fractions 0–1 unless noted.
 
 export type Era = 'pre' | 'post'
 export const ERAS: readonly Era[] = ['pre', 'post']
@@ -141,13 +143,18 @@ export interface Report {
   scales: { weekMax: number; projectMax: number; cellMax: number; hourMax: number }
 }
 
-export interface GenerateReportRequest {
-  /** YYYY-MM-DD; omitted = the default cut-off. The API names it. */
-  cutoff?: string
-}
+/** Why sign-in sent the user back to /generate?error=…; codes, so a link can't put text on the page. */
+export type SignInError = 'invalid-cutoff' | 'cutoff-too-recent'
 
-export interface Session {
-  handle: string
+export type GenerationStatus = 'pending' | 'ready' | 'empty' | 'failed'
+
+/** A report being generated after sign-in. Pending for at most 30 minutes, then failed. */
+export interface Generation {
+  status: GenerationStatus
+  /** only when ready: the report is at /reports/:handle */
+  handle: string | null
+  /** only when failed */
+  message: string | null
 }
 
 export interface ApiErrorBody {

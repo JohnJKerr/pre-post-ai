@@ -1,0 +1,5 @@
+import{n as e}from"./rolldown-runtime-sJBDdmOt.js";import{n as t,r as n}from"./iframe-DUv70uw2.js";import{n as r,t as i}from"./ReportSkeleton-KHxSiXsc.js";var a,o,s,c;function l(){return(l=e((()=>{t(),r(),a=n.meta({title:`Report/Skeleton`,component:i}),o=a.story({}),s=a.story({args:{message:`Waiting for GitHub to compute stats for 12 repos…`}}),c=[`Default`,`CustomMessage`],o.input.parameters={...o.input.parameters,docs:{...o.input.parameters?.docs,source:{originalSource:`meta.story({})`,...o.input.parameters?.docs?.source}}},s.input.parameters={...s.input.parameters,docs:{...s.input.parameters?.docs,source:{originalSource:`meta.story({
+  args: {
+    message: 'Waiting for GitHub to compute stats for 12 repos…'
+  }
+})`,...s.input.parameters?.docs?.source}}}})))()}l();export{s as CustomMessage,o as Default,c as __namedExportsOrder};

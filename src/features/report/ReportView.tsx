@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import type { Report } from '../../api/contract'
-import type { Cutoff } from '../../api/contract'
 import { ShareCard } from '../share/ShareCard'
 import { SharePanel, type ShareSettings } from '../share/SharePanel'
 import { useCardDownload } from '../share/useCardDownload'
@@ -14,15 +13,9 @@ interface ReportViewProps {
   report: Report
   /** absolute link to this report, for sharing */
   link: string
-  /** only on your own report */
-  onCutoffChange?: (cutoff: Cutoff) => void
-  /** why the last cut-off change failed */
-  cutoffError?: string
-  /** only on your own report */
-  onSignOut?: () => void
 }
 
-export function ReportView({ report, link, onCutoffChange, cutoffError, onSignOut }: ReportViewProps) {
+export function ReportView({ report, link }: ReportViewProps) {
   const [share, setShare] = useState<ShareSettings>(() => ({ size: 'wide', showHandle: true, text: shareText(report) }))
   const cardRef = useRef<HTMLDivElement>(null)
   const { download, busy } = useCardDownload(cardRef, `prepost-${report.handle}-${share.size}.png`)
@@ -36,9 +29,8 @@ export function ReportView({ report, link, onCutoffChange, cutoffError, onSignOu
         onDownload={download}
         downloading={busy}
         onCopyLink={() => navigator.clipboard.writeText(link)}
-        onSignOut={onSignOut}
       />
-      <Summary report={report} onCutoffChange={onCutoffChange} cutoffError={cutoffError} />
+      <Summary report={report} />
       <Comparison report={report} />
       <MethodFooter weeks={report.weeks} isSample={report.isSample} />
 

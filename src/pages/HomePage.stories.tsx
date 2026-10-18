@@ -6,8 +6,11 @@ const meta = preview.meta({
   component: HomePage,
 })
 
-/** Storybook runs against the mock API, so this shows the mock sign-in. See Sign in → Connect for the real button. */
+/** Storybook runs against the mock API, so this asks for a handle. See Generate form → Connect for the real button. */
 export const Default = meta.story({})
 
-/** Arriving from an invite's "Is this you?" link. */
-export const FromInvite = meta.story({ parameters: { route: '/?handle=octocat' } })
+/** "Try another cut-off" from a report. */
+export const WithCutoff = meta.story({ parameters: { route: '/generate?cutoff=2022-11-30' } })
+
+/** The API sent the user back: the cut-off week hasn't ended yet. */
+export const CutoffTooRecent = meta.story({ parameters: { route: '/generate?error=cutoff-too-recent' } })

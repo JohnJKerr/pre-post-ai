@@ -1,12 +1,11 @@
 // Mock reports API. Runs the reference calculations in /server against seeded sample
 // activity in place of GitHub, and keeps each user's activity in this browser's localStorage.
-// The contract is in src/api/contract.ts. Sign-in is a cookie naming the handle (see ./session.ts):
-// GET /auth/sign-in is a full-page redirect to GitHub, which a service worker can't stand in for.
+// The contract is in src/api/contract.ts. Sign-in is mocked by the form itself (see ./signIn.ts).
 import { delay, http, HttpResponse } from 'msw'
 import { API_URL } from '../api/config'
-import type { GenerateReportRequest } from '../api/contract'
-import { mockSignOut, SESSION_COOKIE } from './session'
-import { DEFAULT_CUTOFF, PRESET_CUTOFFS } from '../../server/cutoffs'
+import type { Generation } from '../api/contract'
+import { loadGeneration, saveGeneration } from './signIn'
+import { PRESET_CUTOFFS } from '../../server/cutoffs'
 import { sampleProfile } from '../../server/fixture'
 import { buildReport } from '../../server/report'
 import { generateSample, seedFrom } from '../../server/sample'
@@ -37,52 +36,49 @@ function save(profile: ProfileData) {
 }
 
 const error = (status: number, message: string) => HttpResponse.json({ message }, { status })
-const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
+const generation = (status: Generation['status'], fields: Partial<Generation> = {}) =>
+  HttpResponse.json<Generation>({ status, handle: null, message: null, ...fields })
+
+// how long a mock generation stays pending, standing in for GitHub computing stats/* (202s)
+const GENERATING_MS = 2500
+// handles that play out the other endings
+const EMPTY_HANDLE = 'nothing-yet'
+const FAILING_HANDLE = 'broken'
 
 export const handlers = [
-  http.get(`${API_URL}/session`, ({ cookies }) =>
-    cookies[SESSION_COOKIE] ? HttpResponse.json({ handle: cookies[SESSION_COOKIE] }) : error(401, 'You’re not signed in.'),
-  ),
-
-  http.post(`${API_URL}/auth/sign-out`, () => {
-    mockSignOut()
-    return new HttpResponse(null, { status: 204 })
-  }),
-
   http.get(`${API_URL}/sample-report`, async () => {
     await delay(250)
     return HttpResponse.json(buildReport(sampleProfile()))
   }),
 
-  http.post(`${API_URL}/reports`, async ({ request, cookies }) => {
-    const handle = cookies[SESSION_COOKIE]
-    if (!handle) return error(401, 'Connect GitHub to make your report')
+  http.get(`${API_URL}/generations/:id`, ({ params }) => {
+    const id = String(params.id)
+    const job = loadGeneration(id)
+    if (!job) return error(404, 'We couldn’t find that report request. Sign in to generate your report.')
+    if (job.done) return generation('ready', { handle: job.handle })
+    if (Date.now() - job.startedAt < GENERATING_MS) return generation('pending')
 
-    const body = (await request.json().catch(() => ({}))) as GenerateReportRequest
-    const param = body.cutoff ?? null
-    if (param && (!ISO_DAY.test(param) || Number.isNaN(Date.parse(param)))) return error(422, 'The cut-off must be a date, YYYY-MM-DD')
-    const cutoff = param ? (PRESET_CUTOFFS.find((c) => c.date === param) ?? { label: 'Custom', date: param }) : DEFAULT_CUTOFF
+    const handle = job.handle.toLowerCase()
+    if (handle === EMPTY_HANDLE) return generation('empty')
+    if (handle === FAILING_HANDLE) return generation('failed', { message: 'GitHub is still crunching your repository stats. Sign in again in a minute to retry.' })
+
+    const cutoff = PRESET_CUTOFFS.find((c) => c.date === job.cutoff) ?? { label: 'Custom', date: job.cutoff }
     const windows = windowsFor(cutoff.date, new Date())
-    if (windows.weeks < 1) return error(422, 'No complete weeks since that cut-off yet')
-
-    // stands in for the slow run while GitHub computes stats/* (202s)
-    await delay(1400)
-
-    const profile: ProfileData = {
-      handle,
+    save({
+      handle: job.handle,
       isSample: false,
       generatedAt: new Date().toISOString(),
       cutoff,
-      ...generateSample({ seed: seedFrom(`${keyOf(handle)}:${cutoff.date}`), cutoffWeekStart: isoDate(windows.cutoffWeekStart), weeks: windows.weeks }),
-    }
-    save(profile)
-    return HttpResponse.json(buildReport(profile), { status: 201, headers: { Location: `${API_URL}/reports/${encodeURIComponent(handle)}` } })
+      ...generateSample({ seed: seedFrom(`${handle}:${cutoff.date}`), cutoffWeekStart: isoDate(windows.cutoffWeekStart), weeks: windows.weeks }),
+    })
+    saveGeneration(id, { ...job, done: true })
+    return generation('ready', { handle: job.handle })
   }),
 
   http.get(`${API_URL}/reports/:handle`, async ({ params }) => {
     await delay(250)
     const profile = load(String(params.handle))
     // built on read, so rule changes reach saved reports
-    return profile ? HttpResponse.json(buildReport(profile)) : error(404, 'No report for this handle yet')
+    return profile ? HttpResponse.json(buildReport(profile)) : error(404, `${params.handle} hasn’t generated a report yet.`)
   }),
 ]

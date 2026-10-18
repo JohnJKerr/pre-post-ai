@@ -10,11 +10,11 @@ Stack: Vite, React 19, Tailwind v4 + daisyUI 5, TanStack Charts 1.1, TanStack Qu
 npm install
 npm run dev          # app on :5173, reports API mocked by MSW
 npm run storybook    # stories on :6006
-npm test             # back-end reference logic (metric rules, score, windows)
+npm test             # back-end reference logic (metric rules, score, windows) and the cut-off check
 npm run build
 ```
 
-`VITE_API_MOCK=false VITE_API_URL=http://localhost:5101/api npm run dev` runs against the local .NET API.
+`VITE_API_MOCK=false VITE_API_URL=https://localhost:7194/api npm run dev` runs against the local .NET API.
 
 ## Layout
 
@@ -23,8 +23,8 @@ server/            reference back end: windows, metrics, score, report builder, 
                    The mock API and Storybook run it; the real API ports it. The app never imports it (lint rule).
 src/api/           contract.ts (the API types), fetch client, TanStack Query hooks
 src/charts/        TanStack Charts definitions and language colours
-src/features/      report sections, share panel and cards, invite, sign-in: render what the API returns
-src/pages/         routed pages: /, /generate, /r/:handle, /sample
+src/features/      report sections, share panel and cards, invite, cut-off and sign-in form: render what the API returns
+src/pages/         routed pages: /, /generate, /generating, /r/:handle, /sample
 src/lib/           display formatting
 src/mocks/         MSW handlers and mock sign-in standing in for the API
 src/stories/       scenario builder for Storybook
@@ -36,19 +36,19 @@ The back end ([pre-post-ai-api](../pre-post-ai-api)) does every calculation and 
 
 | | |
 |---|---|
-| `GET /auth/sign-in?returnUrl=/generate` | Full-page redirect to GitHub (GitHub App user authorisation), then back to the front end |
-| `POST /auth/sign-out` | `204` |
-| `GET /session` | `200 { handle }` · `401` |
-| `POST /reports` `{ cutoff?: "YYYY-MM-DD" }` | Generate and save the signed-in user's report. `201 Report` · `401` · `422` · `503` (GitHub still computing stats) |
+| `GET /auth/sign-in?cutoff=YYYY-MM-DD` | Full-page navigation to GitHub (GitHub App user authorisation). The API starts the report and lands the browser on `/generating?id=…`; a bad cut-off comes back as `/generate?error=invalid-cutoff` or `cutoff-too-recent`; a failed sign-in comes back to `/`; without the app installed, GitHub's install page |
+| `GET /generations/:id` | `200 { status: pending \| ready \| empty \| failed, handle, message }` · `404`. Polled every 2 s |
 | `GET /reports/:handle` | Saved report. `200 Report` · `404` (the page offers an invite link) |
 | `GET /sample-report` | The public demo report |
 
-Pages: `/` sign in · `/generate` (sign-in returns here; it POSTs and moves on) · `/r/:handle` · `/sample`.
+There's no session and no cookie: every fetch is a plain GET, the only kind the API's CORS policy allows. Changing the cut-off means signing in again, which regenerates the signed-in user's report.
 
-Against the real API, set `VITE_API_MOCK=false` and `VITE_API_URL` (see `.env.example`; production is `https://shift-api.developkerr.com/api`). Requests send cookies cross-origin, so the API must allow the front end's origin with credentials.
+Pages: `/` and `/generate` pick a cut-off and sign in · `/generating?id=` polls, then moves on to the report · `/r/:handle` · `/sample`.
 
-With the mock (the default), sign-in is a handle input that sets a cookie the mock reads (`src/mocks/session.ts`); activity is seeded and kept in this browser's `localStorage`.
+Against the real API, set `VITE_API_MOCK=false` and `VITE_API_URL` (see `.env.example`; production is `https://shift-api.developkerr.com/api`). Point it at the API's own origin, not a proxy: GitHub's callback is built from the host sign-in arrives on.
+
+With the mock (the default), the form asks for a handle and records the generation itself (`src/mocks/signIn.ts`); `GET /generations/:id` stays pending for 2.5 s, then saves seeded activity in this browser's `localStorage`. The handles `nothing-yet` and `broken` play out the empty and failed endings.
 
 ## Storybook
 
-`Report/Full report → Playground` has controls for window length, post-AI growth, project count, hours pattern, punch-card eligibility and no pre-AI activity. Named presets cover each verdict and edge case. `Pages/*` stories run the routed pages against the mock API with per-story handler overrides (generating, your own report, 404 invite, 5xx, rejected cut-off).
+`Report/Full report → Playground` has controls for window length, post-AI growth, project count, hours pattern, punch-card eligibility and no pre-AI activity. Named presets cover each verdict and edge case. `Pages/*` stories run the routed pages against the mock API with per-story handler overrides (generating and its endings, 404 invite, 5xx, a cut-off the API rejected).

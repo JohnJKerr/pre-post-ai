@@ -13,32 +13,11 @@ const meta = preview.meta({
 
 const serve = (args: Parameters<typeof scenarioReport>[0]) =>
   http.get(`${API_URL}/reports/:handle`, () => HttpResponse.json(scenarioReport({ isSample: false, ...args })))
-const signedInAs = (handle: string) => http.get(`${API_URL}/session`, () => HttpResponse.json({ handle }))
 
-/** Someone else's report: no cut-off picker, no sign-out. */
+/** Anyone's report looks the same: there's no session, so no owner controls. */
 export const Loaded = meta.story({
   beforeEach({ msw }) {
     msw.use(serve({ handle: 'steady-dev' }))
-  },
-})
-
-/** Your own report: the cut-off picker and sign-out appear. Changing the cut-off POSTs /reports. */
-export const Yours = meta.story({
-  parameters: { route: '/r/you' },
-  beforeEach({ msw }) {
-    msw.use(serve({ handle: 'you' }), signedInAs('you'))
-  },
-})
-
-/** Changing the cut-off fails, e.g. a date with no complete weeks yet. */
-export const CutoffChangeFails = meta.story({
-  parameters: { route: '/r/you' },
-  beforeEach({ msw }) {
-    msw.use(
-      serve({ handle: 'you' }),
-      signedInAs('you'),
-      http.post(`${API_URL}/reports`, () => HttpResponse.json({ message: 'Pick a cut-off at least one full week ago, so there’s a week to compare.' }, { status: 422 })),
-    )
   },
 })
 

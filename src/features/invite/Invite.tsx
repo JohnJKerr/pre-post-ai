@@ -39,7 +39,7 @@ export function Invite({ handle, link }: InviteProps) {
           </div>
         </div>
         <p className="text-sm text-muted">
-          Is this you? <Link to={`/?${new URLSearchParams({ handle })}`} className="link">Make your report</Link>
+          Is this you? <Link to="/generate" className="link">Make your report</Link>
         </p>
       </main>
     </div>

@@ -1,15 +1,16 @@
 import { Link, useSearchParams } from 'react-router'
-import { API_MOCK } from '../api/config'
-import { ConnectGitHub } from '../features/signin/ConnectGitHub'
-import { MockSignIn } from '../features/signin/MockSignIn'
+import { GenerateForm } from '../features/generate/GenerateForm'
+import { isSignInError } from '../features/generate/cutoffs'
 
+/** / and /generate: pick a cut-off and sign in. The API sends a bad cut-off back to /generate?error=…. */
 export function HomePage() {
   const [params] = useSearchParams()
+  const error = params.get('error')
 
   return (
     <div data-theme="now" className="flex min-h-dvh flex-col bg-base-100 font-now text-base-content">
       <header className="flex items-center border-b border-base-300 px-4 py-3 sm:px-8">
-        <p className="text-base font-extrabold tracking-tight sm:text-lg">Pre<span className="text-muted">/</span>Post</p>
+        <Link to="/" className="text-base font-extrabold tracking-tight sm:text-lg">Pre<span className="text-muted">/</span>Post</Link>
       </header>
       <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-10 px-4 py-16 sm:px-8">
         <div className="flex max-w-3xl flex-col gap-5">
@@ -22,7 +23,7 @@ export function HomePage() {
           </p>
         </div>
         <div className="flex max-w-xl flex-col gap-4">
-          {API_MOCK ? <MockSignIn initialHandle={params.get('handle') ?? ''} /> : <ConnectGitHub />}
+          <GenerateForm key={params.toString()} initialCutoff={params.get('cutoff') ?? undefined} error={isSignInError(error) ? error : null} />
           <p className="text-sm text-muted"><Link to="/sample" className="link">See a sample report</Link></p>
         </div>
       </main>
