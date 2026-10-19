@@ -4,7 +4,6 @@ import { API_MOCK } from '../api/config'
 import { authApi } from '../api/reports'
 import { useGeneration } from '../api/useReports'
 import { lastCutoff } from '../features/generate/cutoffs'
-import { ReportSkeleton } from '../features/report/ReportSkeleton'
 import { Logo } from '../features/brand/Logo'
 
 /** /generating?id=…, where sign-in lands: polls the generation, then shows the report. */
@@ -18,7 +17,7 @@ function Generating({ id }: { id: string }) {
   const { data, error } = useGeneration(id)
 
   if (error) return <Ending title="We couldn’t find that report" message={error.message} action={<SignInAgain />} />
-  if (!data || data.status === 'pending') return <ReportSkeleton message="Making your report. Big accounts can take a few minutes…" />
+  if (!data || data.status === 'pending') return <Making />
   if (data.status === 'ready' && data.handle) return <Navigate to={`/r/${data.handle}`} replace />
   if (data.status === 'empty')
     return (
@@ -31,20 +30,39 @@ function Generating({ id }: { id: string }) {
   return <Ending title="Your report didn’t finish" message={data.message ?? 'Something went wrong generating your report.'} action={<SignInAgain />} />
 }
 
+/** Generation has no progress to report, so an indeterminate bar rather than a skeleton of a report that may never come. */
+function Making() {
+  return (
+    <Frame>
+      <div aria-busy="true" aria-live="polite" className="flex flex-col gap-5">
+        <h1 className="text-4xl font-extrabold tracking-tight">Making your report</h1>
+        <progress className="progress w-full text-post-mark" aria-label="Generating your report" />
+        <p className="text-base text-muted sm:text-lg">Big accounts can take a few minutes. You can leave this page open.</p>
+      </div>
+    </Frame>
+  )
+}
+
 function Ending({ title, message, action }: { title: string; message: string; action: ReactNode }) {
+  return (
+    <Frame>
+      <h1 className="text-4xl font-extrabold tracking-tight">{title}</h1>
+      <p role="alert" className="text-base text-muted sm:text-lg">{message}</p>
+      <div className="flex flex-wrap gap-2">
+        {action}
+        <Link to="/" className="btn btn-ghost">Home</Link>
+      </div>
+    </Frame>
+  )
+}
+
+function Frame({ children }: { children: ReactNode }) {
   return (
     <div data-theme="now" className="flex min-h-dvh flex-col bg-base-100 font-now text-base-content">
       <header className="flex items-center border-b border-base-300 px-4 py-3 sm:px-8">
         <Link to="/" className="py-1"><Logo /></Link>
       </header>
-      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-5 px-4 py-16">
-        <h1 className="text-4xl font-extrabold tracking-tight">{title}</h1>
-        <p role="alert" className="text-base text-muted sm:text-lg">{message}</p>
-        <div className="flex flex-wrap gap-2">
-          {action}
-          <Link to="/" className="btn btn-ghost">Home</Link>
-        </div>
-      </main>
+      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-5 px-4 py-16">{children}</main>
     </div>
   )
 }

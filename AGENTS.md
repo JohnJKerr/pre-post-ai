@@ -7,7 +7,7 @@ Read `README.md` first: it covers running the app, the layout, the API contract 
 - **Metadata only.** Shift reads GitHub repository metadata, never code. Any new data must come from metadata endpoints.
 - **The front end renders; the API computes.** Components format and draw the `Report` from `src/api/contract.ts`. A change to windows, metrics or the score goes in `server/` (the reference back end, with its tests) and must be ported to the .NET API in `../pre-post-ai-api`; say so when you hand back.
 - **Every UI state gets a story.** New sections, endings or edge cases get a Storybook story, built from `src/stories/scenarios.ts` where a report is involved.
-- **Loading shows skeletons**, matching the layout they stand in for.
+- **Loading shows skeletons**, matching the layout they stand in for. The exception is generating a report (`GeneratingPage`), which shows an indeterminate progress bar: it can take minutes and may end without a report.
 
 ## Brand
 

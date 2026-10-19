@@ -1,4 +1,4 @@
-// Shown while GitHub computes stats/* (it answers 202 until ready). Skeletons, not spinners.
+// Shown while a report loads. Skeletons, not spinners; generating a report shows a progress bar instead (GeneratingPage).
 import { EraCell } from './era'
 import { Logo } from '../brand/Logo'
 
