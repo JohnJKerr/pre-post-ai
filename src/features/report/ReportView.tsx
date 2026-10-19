@@ -32,7 +32,7 @@ export function ReportView({ report, link }: ReportViewProps) {
       />
       <Summary report={report} />
       <Comparison report={report} />
-      <MethodFooter weeks={report.weeks} isSample={report.isSample} />
+      <MethodFooter report={report} />
 
       {/* full-size card, off screen, for the PNG download */}
       <div aria-hidden="true" inert className="pointer-events-none fixed top-0 left-[-20000px]">

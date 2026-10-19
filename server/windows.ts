@@ -1,9 +1,11 @@
 // Window bounds. stats/contributors buckets by Sunday-start weeks, so both windows are
-// whole weeks: post runs from the cut-off week to the last complete week, pre is the
-// same number of weeks immediately before it.
+// whole weeks. Pre is the weeks just before the cut-off week and post the latest complete
+// weeks, at most 26 of each, so an old cut-off doesn't stretch either window over years.
+// A cut-off under 26 weeks ago shrinks both to the weeks since it, and post starts at it.
 
 const DAY = 86_400_000
 const WEEK = 7 * DAY
+export const MAX_WEEKS = 26
 
 export interface DateRange {
   start: Date
@@ -27,13 +29,15 @@ export function weekStart(date: Date) {
 
 export function windowsFor(cutoffDate: string, today: Date): Windows {
   const cutoffWeekStart = weekStart(utcDay(cutoffDate))
-  const weeks = Math.max(0, Math.round((weekStart(today).getTime() - cutoffWeekStart.getTime()) / WEEK))
+  const sinceCutoff = Math.round((weekStart(today).getTime() - cutoffWeekStart.getTime()) / WEEK)
+  const weeks = Math.max(0, Math.min(MAX_WEEKS, sinceCutoff))
   const c = cutoffWeekStart.getTime()
+  const now = weekStart(today).getTime()
   return {
     cutoffWeekStart,
     weeks,
     pre: { start: new Date(c - weeks * WEEK), end: new Date(c - DAY) },
-    post: { start: new Date(c), end: new Date(c + weeks * WEEK - DAY) },
+    post: { start: new Date(now - weeks * WEEK), end: new Date(now - DAY) },
   }
 }
 

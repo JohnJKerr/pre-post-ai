@@ -3,6 +3,7 @@ import { date, times } from '../../lib/format'
 import type { Report } from '../../api/contract'
 import { summarySentence } from './copy'
 import { VerdictArt } from './VerdictArt'
+import { windowsLine } from './windows'
 
 function ScoreCard({ report }: { report: Report }) {
   const { shift, score } = report
@@ -96,12 +97,12 @@ function CutoffNote({ report: { cutoff, isSample } }: { report: Report }) {
 }
 
 export function Summary({ report }: { report: Report }) {
-  const { score, weeks } = report
+  const { score } = report
   return (
     <section aria-labelledby="verdict" className="bg-base-100">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-10 px-4 py-10 sm:gap-14 sm:px-8 sm:py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <p className="text-sm text-muted sm:text-base">{weeks} weeks either side of the cut-off, from your GitHub metadata.</p>
+          <p className="text-sm text-muted sm:text-base">{windowsLine(report)}, from your GitHub metadata.</p>
           <CutoffNote report={report} />
         </div>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-14">

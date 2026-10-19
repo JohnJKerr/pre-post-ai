@@ -7,8 +7,8 @@ const meta = preview.meta({
   component: ScenarioReport,
   args: SAMPLE_ARGS,
   argTypes: {
-    seed: { control: { type: 'number' }, description: 'Random seed. 20251124 with 47 weeks is the handoff fixture.' },
-    weeks: { control: { type: 'range', min: 1, max: 200, step: 1 }, description: 'Complete weeks since the cut-off' },
+    seed: { control: { type: 'number' }, description: 'Random seed. 20251124 with 47 weeks since the cut-off is the sample fixture.' },
+    weeks: { control: { type: 'range', min: 1, max: 200, step: 1 }, description: 'Complete weeks since the cut-off. Each window takes at most 26 of them.' },
     postGrowth: { control: { type: 'range', min: 0, max: 4, step: 0.05 }, description: 'Multiplies post-AI lines' },
     postProjects: { control: { type: 'range', min: 1, max: 12, step: 1 }, description: 'Keep the top N post-AI projects' },
     hours: { control: 'inline-radio', options: ['nights and weekends', 'evenings back', 'unchanged'] },
@@ -22,7 +22,7 @@ const meta = preview.meta({
 /** Every control live. Start here to try configurations. */
 export const Playground = meta.story({})
 
-/** The sample's updated scoring: 69, "I'm a machine (literally)". */
+/** The sample over 26-week windows: 65, "I'm a machine (literally)". */
 export const Sample = meta.story({ args: PRESETS.sample })
 
 export const RobotArms = meta.story({ args: PRESETS.robotArms })
@@ -44,10 +44,10 @@ export const PrivateRepos = meta.story({ args: PRESETS.privateRepos })
 /** Only the pre-AI side lacks eligible repos. Hours drop out of the score. */
 export const NoPrePunchCard = meta.story({ args: PRESETS.noPrePunchCard })
 
-/** Edge case: only 6 complete weeks since the cut-off. */
+/** Edge case: only 6 complete weeks since the cut-off, so both windows shrink to 6 and meet at it. */
 export const ShortWindow = meta.story({ args: PRESETS.shortWindow })
 
-/** A very long window, as with an early cut-off. */
+/** An early cut-off: 26 weeks before it against the latest 26, with years between them. */
 export const LongWindow = meta.story({ args: PRESETS.longWindow })
 
 export const Phone = meta.story({

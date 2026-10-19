@@ -55,6 +55,8 @@ export interface SampleOptions {
   seed?: number
   /** Sunday that starts the cut-off week, ISO date */
   cutoffWeekStart?: string
+  /** Sunday that starts the post window, ISO date; the cut-off week unless the cut-off is over 26 weeks ago */
+  postStart?: string
   weeks?: number
 }
 
@@ -66,11 +68,12 @@ export interface SampleActivity {
   punchShare: Record<Era, number>
 }
 
-export function generateSample({ seed = SAMPLE_SEED, cutoffWeekStart = '2025-11-23', weeks = 47 }: SampleOptions = {}): SampleActivity {
+// the defaults are the sample's windows: the default cut-off, generated on 18 Oct 2026
+export function generateSample({ seed = SAMPLE_SEED, cutoffWeekStart = '2025-11-23', postStart = '2026-04-19', weeks = 26 }: SampleOptions = {}): SampleActivity {
   const rand = mulberry32(seed)
   const jitter = (spread: number) => 1 + (rand() * 2 - 1) * spread
   const cutoffMs = Date.parse(cutoffWeekStart + 'T00:00:00Z')
-  const startOf = (era: Era) => (era === 'pre' ? cutoffMs - weeks * 7 * DAY : cutoffMs)
+  const startOf = (era: Era) => (era === 'pre' ? cutoffMs - weeks * 7 * DAY : Date.parse(postStart + 'T00:00:00Z'))
 
   // daily commit counts from the weekday weights and a weekly rhythm (holidays, the post-release ramp)
   function dailyCommits(era: Era, total: number) {

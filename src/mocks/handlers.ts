@@ -69,7 +69,7 @@ export const handlers = [
       isSample: false,
       generatedAt: new Date().toISOString(),
       cutoff,
-      ...generateSample({ seed: seedFrom(`${handle}:${cutoff.date}`), cutoffWeekStart: isoDate(windows.cutoffWeekStart), weeks: windows.weeks }),
+      ...generateSample({ seed: seedFrom(`${handle}:${cutoff.date}`), cutoffWeekStart: isoDate(windows.cutoffWeekStart), postStart: isoDate(windows.post.start), weeks: windows.weeks }),
     })
     saveGeneration(id, { ...job, done: true })
     return generation('ready', { handle: job.handle })

@@ -1,13 +1,25 @@
+import type { Report } from '../../api/contract'
+import { MAX_WINDOW_WEEKS, windowsMeet } from './windows'
+
 const Code = ({ children }: { children: string }) => <code className="font-now-mono text-[13px] text-base-content">{children}</code>
 
-export function MethodFooter({ weeks, isSample }: { weeks: number; isSample: boolean }) {
+function windowsNote(report: Report) {
+  const { weeks } = report
+  if (!windowsMeet(report))
+    return `The ${weeks} weeks before the week the cut-off falls in, against your latest ${weeks} complete weeks. Each window is capped at ${MAX_WINDOW_WEEKS} weeks, so an early cut-off doesn't stretch them over years.`
+  const shrunk = weeks < MAX_WINDOW_WEEKS ? ` Windows go up to ${MAX_WINDOW_WEEKS} weeks, so a cut-off this recent shrinks both.` : ''
+  return `${weeks} weeks either side of the week the cut-off falls in, so both sides cover the same amount of time.${shrunk}`
+}
+
+export function MethodFooter({ report }: { report: Report }) {
+  const { isSample } = report
   const notes = [
     ['Lines and commits', <>Weekly totals per repo from <Code>/stats/contributors</Code>. These cover the whole repo, so lock files and generated code count, and repos with 10,000+ commits report no lines.</>],
     ['Punch card, hours, evenings and weekends', <><Code>/stats/punch_card</Code> counts every author for all time, so only projects you wrote 90%+ of, that sit wholly on one side of the cut-off, are used.</>],
     ['Languages', <>Byte shares from <Code>/languages</Code>, weighted by your lines in each window. CSS and HTML are left out. A new language needs at least 5% after the cut-off and at most 1% before it.</>],
     ['Active days', <>Your GitHub contribution calendar.</>],
     ['Shift score', <>10× the commits earns 28 points and 10× the lines earns 12. Four times the projects earns 15, four new languages earn 20, and twice as many active days earns 25.</>],
-    ['Windows', <>{weeks} weeks either side of the week the cut-off falls in, so both sides cover the same amount of time.</>],
+    ['Windows', <>{windowsNote(report)}</>],
   ] as const
   return (
     <footer aria-labelledby="method" className="border-t border-base-300 bg-base-100">

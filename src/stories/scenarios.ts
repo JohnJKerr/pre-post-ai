@@ -14,7 +14,7 @@ export interface ScenarioArgs {
   isSample: boolean
   /** seed for the generated activity; the default reproduces the handoff fixture */
   seed: number
-  /** complete weeks since the cut-off (window length) */
+  /** complete weeks since the cut-off; each window is at most 26 of them */
   weeks: number
   /** multiplies post-AI lines added and deleted */
   postGrowth: number
@@ -43,6 +43,11 @@ export const SAMPLE_ARGS: ScenarioArgs = {
   postPunchCard: true,
 }
 
+const GENERATED_AT = '2026-10-18T00:00:00Z'
+const WEEK = 7 * 86_400_000
+/** Sunday 18 Oct 2026, the week the scenarios are generated in */
+const GENERATED_WEEK = Date.parse(GENERATED_AT)
+
 const scaleWeeks = (weeks: Week[], k: number) => weeks.map((w) => ({ ...w, a: Math.round(w.a * k), d: Math.round(w.d * k) }))
 const zeroWeeks = (weeks: Week[]) => weeks.map((w) => ({ ...w, a: 0, d: 0, c: 0 }))
 
@@ -67,9 +72,11 @@ function keepTopPostProjects(repos: RepoActivity[], n: number): RepoActivity[] {
 
 export function buildScenario(args: Partial<ScenarioArgs> = {}): ProfileData {
   const a = { ...SAMPLE_ARGS, ...args }
-  const isFixture = a.seed === SAMPLE_SEED && a.weeks === 47
-  const cutoffWeekStart = isoDate(windowsFor(DEFAULT_CUTOFF.date, new Date('2025-11-24T00:00:00Z')).cutoffWeekStart)
-  const s = isFixture ? generateSample() : generateSample({ seed: a.seed, weeks: Math.max(1, a.weeks), cutoffWeekStart })
+  // the windows the API would set; 47 weeks since the default cut-off with the sample seed is the fixture
+  const weeksSince = Math.max(1, a.weeks)
+  const cutoff = weeksSince === 47 ? DEFAULT_CUTOFF : { label: 'Custom', date: isoDate(new Date(GENERATED_WEEK - weeksSince * WEEK)) }
+  const w = windowsFor(cutoff.date, new Date(GENERATED_AT))
+  const s = generateSample({ seed: a.seed, weeks: w.weeks, cutoffWeekStart: isoDate(w.cutoffWeekStart), postStart: isoDate(w.post.start) })
 
   let repos = keepTopPostProjects(s.repos, Math.max(1, Math.min(12, a.postProjects)))
   let weekly = { pre: s.weekly.pre, post: scaleWeeks(s.weekly.post, a.postGrowth) }
@@ -95,8 +102,8 @@ export function buildScenario(args: Partial<ScenarioArgs> = {}): ProfileData {
   return {
     handle: a.handle,
     isSample: a.isSample,
-    generatedAt: '2026-10-18T00:00:00Z',
-    cutoff: DEFAULT_CUTOFF,
+    generatedAt: GENERATED_AT,
+    cutoff,
     repos,
     weekly,
     punchCard,

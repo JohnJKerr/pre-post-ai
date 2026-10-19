@@ -14,18 +14,18 @@ const GivenAWindowSummary = (overrides: Partial<ScoreSide> = {}): ScoreSide => (
 })
 
 describe('WhenScoringTheShift', () => {
-  it('Sample_developer_scores_69_and_is_a_machine', () => {
+  it('Sample_developer_scores_65_and_is_a_machine', () => {
     const pre = GivenAWindowSummary({
-      added: 40_459,
-      commits: 638,
+      added: 38_306,
+      commits: 639,
       projectCount: 5,
       languages: [{ language: 'TypeScript', share: 0.7 }],
-      activeDays: 161,
-      outOfHours: 0.122,
+      activeDays: 99,
+      outOfHours: 0.126,
     })
     const post = GivenAWindowSummary({
-      added: 226_832,
-      commits: 1_604,
+      added: 232_608,
+      commits: 1_617,
       projectCount: 12,
       languages: [
         { language: 'TypeScript', share: 0.4 },
@@ -34,12 +34,12 @@ describe('WhenScoringTheShift', () => {
         { language: 'Rust', share: 0.13 },
         { language: 'Swift', share: 0.12 },
       ],
-      activeDays: 277,
-      outOfHours: 0.546,
+      activeDays: 155,
+      outOfHours: 0.552,
     })
     const shift = scoreShift(pre, post)
-    expect(shift.parts).toEqual({ output: 20, projects: 9, languages: 20, time: 20 })
-    expect(shift.score).toBe(69)
+    expect(shift.parts).toEqual({ output: 20, projects: 9, languages: 20, time: 16 })
+    expect(shift.score).toBe(65)
     expect(shift.verdict).toBe("I'm a machine (literally)")
   })
 

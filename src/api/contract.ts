@@ -133,7 +133,8 @@ export interface Report {
   /** ISO timestamp */
   generatedAt: string
   cutoff: Cutoff
-  /** complete weeks either side of the cut-off */
+  /** complete weeks in each window, at most 26: pre ends the day before the cut-off week, post is the
+   *  latest complete weeks, so a gap sits between them unless the cut-off is under 26 weeks ago */
   weeks: number
   pre: WindowSummary
   post: WindowSummary

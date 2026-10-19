@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { buildReport } from './report'
 import { sampleProfile } from './fixture'
 
-// Expected values for the sample fixture, from the handoff brief.
+// Expected values for the sample fixture: the handoff's seeded data over 26-week windows.
 describe('WhenDerivingTheSampleReport', () => {
   const { pre, post, shift, score } = buildReport(sampleProfile())
 
   it('Totals_lines_and_commits_per_window', () => {
-    expect([pre.added, pre.deleted, pre.commits]).toEqual([40_459, 12_665, 638])
-    expect([post.added, post.deleted, post.commits]).toEqual([226_832, 74_833, 1_604])
+    expect([pre.added, pre.deleted, pre.commits]).toEqual([38_306, 12_125, 639])
+    expect([post.added, post.deleted, post.commits]).toEqual([232_608, 72_522, 1_617])
   })
 
   it('Counts_projects_and_started_projects', () => {
@@ -17,29 +17,29 @@ describe('WhenDerivingTheSampleReport', () => {
   })
 
   it('Finds_the_busiest_hour', () => {
-    expect(pre.punch!.busiest).toMatchObject({ day: 2, hour: 10 })
-    expect(post.punch!.busiest).toMatchObject({ day: 2, hour: 21 })
+    expect(pre.punch!.busiest).toMatchObject({ day: 1, hour: 11 })
+    expect(post.punch!.busiest).toMatchObject({ day: 4, hour: 20 })
   })
 
   it('Finds_the_coding_window', () => {
     expect(pre.punch!.window).toEqual({ start: 9, length: 8, end: 17 })
-    expect(post.punch!.window).toEqual({ start: 8, length: 14, end: 22 })
+    expect(post.punch!.window).toEqual({ start: 9, length: 14, end: 23 })
   })
 
   it('Counts_hours_of_the_day_used', () => {
-    expect(pre.punch!.hoursTouched).toBe(15)
+    expect(pre.punch!.hoursTouched).toBe(14)
     expect(post.punch!.hoursTouched).toBe(21)
   })
 
   it('Counts_active_days', () => {
-    expect([pre.activeDays, pre.activeDaysPerWeek]).toEqual([161, 3.4])
-    expect([post.activeDays, post.activeDaysPerWeek]).toEqual([277, 5.9])
+    expect([pre.activeDays, pre.activeDaysPerWeek]).toEqual([99, 3.8])
+    expect([post.activeDays, post.activeDaysPerWeek]).toEqual([155, 6])
   })
 
   it('Splits_evenings_and_weekends', () => {
     const r = (x: number) => +(x * 100).toFixed(1)
-    expect([r(pre.punch!.evening), r(pre.punch!.weekend), r(pre.punch!.combined)]).toEqual([7.1, 5.1, 12.2])
-    expect([r(post.punch!.evening), r(post.punch!.weekend), r(post.punch!.combined)]).toEqual([30.6, 24.0, 54.6])
+    expect([r(pre.punch!.evening), r(pre.punch!.weekend), r(pre.punch!.combined)]).toEqual([6.8, 5.8, 12.6])
+    expect([r(post.punch!.evening), r(post.punch!.weekend), r(post.punch!.combined)]).toEqual([30.5, 24.7, 55.2])
   })
 
   it('Reports_punch_card_coverage', () => {
@@ -47,9 +47,9 @@ describe('WhenDerivingTheSampleReport', () => {
     expect(post.coverage).toEqual({ eligible: 10, total: 12, share: 0.84 })
   })
 
-  it('Spans_whole_weeks_either_side_of_the_cutoff', () => {
-    expect(pre.range).toEqual({ start: '2024-12-29', end: '2025-11-22' })
-    expect(post.range).toEqual({ start: '2025-11-23', end: '2026-10-17' })
+  it('Spans_the_26_weeks_before_the_cutoff_and_the_latest_26', () => {
+    expect(pre.range).toEqual({ start: '2025-05-25', end: '2025-11-22' })
+    expect(post.range).toEqual({ start: '2026-04-19', end: '2026-10-17' })
   })
 
   it('Counts_used_and_new_languages', () => {
@@ -58,10 +58,10 @@ describe('WhenDerivingTheSampleReport', () => {
     expect(shift.newLanguages.sort()).toEqual(['Go', 'Python', 'Rust', 'Swift'])
   })
 
-  it('Scores_69_and_is_a_machine', () => {
+  it('Scores_65_and_is_a_machine', () => {
     const points = Object.fromEntries(Object.entries(score.parts).map(([k, p]) => [k, p.points]))
-    expect(points).toEqual({ output: 20, projects: 9, languages: 20, time: 20 })
-    expect(score.total).toBe(69)
+    expect(points).toEqual({ output: 20, projects: 9, languages: 20, time: 16 })
+    expect(score.total).toBe(65)
     expect(score.verdict).toBe("I'm a machine (literally)")
   })
 })
@@ -73,6 +73,6 @@ describe('WhenAWindowHasNoEligibleRepos', () => {
     const { pre, score } = buildReport(profile)
     expect(pre.punch).toBeNull()
     expect(pre.coverage).toEqual({ eligible: 0, total: 5, share: 0 })
-    expect(score.parts.time.points).toBe(20)
+    expect(score.parts.time.points).toBe(16)
   })
 })
