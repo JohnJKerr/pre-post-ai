@@ -41,6 +41,8 @@ The back end ([pre-post-ai-api](../pre-post-ai-api)) does every calculation and 
 | `GET /reports/:handle` | Saved report. `200 Report` · `404` (the page offers an invite link) |
 | `GET /sample-report` | The public demo report |
 
+The API works from the cut-off date alone and returns it as `cutoff: { date }`; the front end names the preset releases (`src/features/generate/cutoffs.ts`) and shows any other date as just a date.
+
 There's no session and no cookie: every fetch is a plain GET, the only kind the API's CORS policy allows. Changing the cut-off means signing in again, which regenerates the signed-in user's report.
 
 Pages: `/` and `/generate` pick a cut-off and sign in · `/generating?id=` polls, then moves on to the report · `/r/:handle` · `/sample`.

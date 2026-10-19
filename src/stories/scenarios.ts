@@ -1,9 +1,8 @@
 // Builds profile variants for Storybook from the seeded sample, so each story can dial in
 // one configuration: growth, project count, hours pattern, punch-card eligibility, and so on.
 // Storybook runs the reference back-end calculations in /server to make each Report.
-import { DEFAULT_CUTOFF } from '../../server/cutoffs'
 import { buildReport } from '../../server/report'
-import { generateSample, SAMPLE_HANDLE, SAMPLE_SEED } from '../../server/sample'
+import { generateSample, SAMPLE_CUTOFF, SAMPLE_HANDLE, SAMPLE_SEED } from '../../server/sample'
 import type { Era, ProfileData, PunchCell, RepoActivity, Week } from '../../server/types'
 import { isoDate, windowsFor } from '../../server/windows'
 
@@ -74,7 +73,7 @@ export function buildScenario(args: Partial<ScenarioArgs> = {}): ProfileData {
   const a = { ...SAMPLE_ARGS, ...args }
   // the windows the API would set; 47 weeks since the default cut-off with the sample seed is the fixture
   const weeksSince = Math.max(1, a.weeks)
-  const cutoff = weeksSince === 47 ? DEFAULT_CUTOFF : { label: 'Custom', date: isoDate(new Date(GENERATED_WEEK - weeksSince * WEEK)) }
+  const cutoff = { date: weeksSince === 47 ? SAMPLE_CUTOFF : isoDate(new Date(GENERATED_WEEK - weeksSince * WEEK)) }
   const w = windowsFor(cutoff.date, new Date(GENERATED_AT))
   const s = generateSample({ seed: a.seed, weeks: w.weeks, cutoffWeekStart: isoDate(w.cutoffWeekStart), postStart: isoDate(w.post.start) })
 

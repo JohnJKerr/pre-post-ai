@@ -44,7 +44,7 @@ export const PrivateRepos = meta.story({ args: PRESETS.privateRepos })
 /** Only the pre-AI side lacks eligible repos. Hours drop out of the score. */
 export const NoPrePunchCard = meta.story({ args: PRESETS.noPrePunchCard })
 
-/** Edge case: only 6 complete weeks since the cut-off, so both windows shrink to 6 and meet at it. */
+/** Edge case: only 6 complete weeks since the cut-off, so both windows shrink to 6 and meet at it. The date is no preset, so it shows unnamed. */
 export const ShortWindow = meta.story({ args: PRESETS.shortWindow })
 
 /** An early cut-off: 26 weeks before it against the latest 26, with years between them. */

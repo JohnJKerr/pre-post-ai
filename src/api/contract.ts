@@ -19,8 +19,8 @@
 export type Era = 'pre' | 'post'
 export const ERAS: readonly Era[] = ['pre', 'post']
 
+/** The API works from the date alone; the front end names the release it marks. */
 export interface Cutoff {
-  label: string
   /** YYYY-MM-DD */
   date: string
 }

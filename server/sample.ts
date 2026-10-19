@@ -5,6 +5,8 @@ import type { Era, PunchCell, RepoActivity, Week } from './types'
 
 export const SAMPLE_SEED = 20251124
 export const SAMPLE_HANDLE = 'sam-builds'
+/** the sample's cut-off: the Claude Opus 4.5 release */
+export const SAMPLE_CUTOFF = '2025-11-24'
 
 const DAY = 86_400_000
 

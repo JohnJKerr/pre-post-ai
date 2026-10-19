@@ -1,10 +1,16 @@
-// Cut-offs offered in the selector. Only the date goes to the API, which names it.
-import type { Cutoff, SignInError } from '../../api/contract'
+// Cut-offs offered in the selector. Only the date goes to the API; the front end names it.
+import type { SignInError } from '../../api/contract'
 
-export const DEFAULT_CUTOFF: Cutoff = { label: 'Claude Opus 4.5', date: '2025-11-24' }
+export interface NamedCutoff {
+  label: string
+  /** YYYY-MM-DD */
+  date: string
+}
 
-// Major frontier model releases, newest first, matching the API's named cut-offs.
-export const PRESET_CUTOFFS: Cutoff[] = [
+export const DEFAULT_CUTOFF: NamedCutoff = { label: 'Claude Opus 4.5', date: '2025-11-24' }
+
+// Major frontier model releases, newest first. One label per date: the date names the cut-off.
+export const PRESET_CUTOFFS: NamedCutoff[] = [
   { label: 'GPT-5.5', date: '2026-04-23' },
   { label: 'Claude Opus 4.7', date: '2026-04-16' },
   { label: 'GPT-5.4', date: '2026-03-05' },
@@ -28,6 +34,9 @@ export const PRESET_CUTOFFS: Cutoff[] = [
   { label: 'GPT-4', date: '2023-03-14' },
   { label: 'ChatGPT launch', date: '2022-11-30' },
 ]
+
+/** The release a cut-off date marks, or null for a date of the user's own. */
+export const cutoffName = (date: string) => PRESET_CUTOFFS.find((c) => c.date === date)?.label ?? null
 
 export const SIGN_IN_ERRORS: Record<SignInError, string> = {
   'invalid-cutoff': 'That isn’t a valid date. Use YYYY-MM-DD.',

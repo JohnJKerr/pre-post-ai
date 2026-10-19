@@ -3,6 +3,7 @@ import { date, times } from '../../lib/format'
 import type { Report } from '../../api/contract'
 import { summarySentence } from './copy'
 import { VerdictArt } from './VerdictArt'
+import { cutoffName } from '../generate/cutoffs'
 import { windowsLine } from './windows'
 
 function ScoreCard({ report }: { report: Report }) {
@@ -85,10 +86,11 @@ function Ladder({ score: { total: score, rung, ladder } }: { score: Report['scor
 
 /** Changing the cut-off means signing in again, which regenerates the signed-in user's own report. */
 function CutoffNote({ report: { cutoff, isSample } }: { report: Report }) {
+  const name = cutoffName(cutoff.date)
   return (
     <div className="flex flex-col gap-1 sm:items-end sm:text-right">
       <p className="text-sm font-medium text-muted">Cut-off</p>
-      <p className="text-sm font-semibold sm:text-base">{cutoff.label} · {date(cutoff.date)}</p>
+      <p className="text-sm font-semibold sm:text-base">{name && `${name} · `}{date(cutoff.date)}</p>
       {isSample
         ? <Link to="/generate" className="link text-sm text-muted">Make your own report</Link>
         : <Link to={`/generate?${new URLSearchParams({ cutoff: cutoff.date })}`} className="link text-sm text-muted">Yours? Try another cut-off</Link>}

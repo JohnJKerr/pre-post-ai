@@ -5,7 +5,6 @@ import { delay, http, HttpResponse } from 'msw'
 import { API_URL } from '../api/config'
 import type { Generation } from '../api/contract'
 import { loadGeneration, saveGeneration } from './signIn'
-import { PRESET_CUTOFFS } from '../../server/cutoffs'
 import { sampleProfile } from '../../server/fixture'
 import { buildReport } from '../../server/report'
 import { generateSample, seedFrom } from '../../server/sample'
@@ -62,7 +61,7 @@ export const handlers = [
     if (handle === EMPTY_HANDLE) return generation('empty')
     if (handle === FAILING_HANDLE) return generation('failed', { message: 'GitHub is still crunching your repository stats. Sign in again in a minute to retry.' })
 
-    const cutoff = PRESET_CUTOFFS.find((c) => c.date === job.cutoff) ?? { label: 'Custom', date: job.cutoff }
+    const cutoff = { date: job.cutoff }
     const windows = windowsFor(cutoff.date, new Date())
     save({
       handle: job.handle,
