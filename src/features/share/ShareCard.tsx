@@ -94,7 +94,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
         <div className="flex flex-col gap-3">
           <CardPunch report={report} era="post" width={chartW} height={128} />
           <p className={`flex justify-between font-now-mono text-[15px] ${tint.post.muted}`}>
-            <span>Pre/Post · score <span className="font-semibold text-base-content">{report.score.total}/100</span></span>
+            <span>Shift · score <span className="font-semibold text-base-content">{report.score.total}/100</span></span>
             <span className={tint.post.ink}>{link.replace(/^https?:\/\//, '')}</span>
           </p>
         </div>

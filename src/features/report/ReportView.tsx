@@ -18,7 +18,7 @@ interface ReportViewProps {
 export function ReportView({ report, link }: ReportViewProps) {
   const [share, setShare] = useState<ShareSettings>(() => ({ size: 'wide', showHandle: true, text: shareText(report) }))
   const cardRef = useRef<HTMLDivElement>(null)
-  const { download, busy } = useCardDownload(cardRef, `prepost-${report.handle}-${share.size}.png`)
+  const { download, busy } = useCardDownload(cardRef, `shift-${report.handle}-${share.size}.png`)
 
   return (
     <div data-theme="now" className="overflow-x-clip bg-base-100 font-now text-base-content">

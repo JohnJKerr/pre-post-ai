@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { shareLinks } from '../share/links'
+import { Logo } from '../brand/Logo'
 
 interface InviteProps {
   handle: string
@@ -11,13 +12,13 @@ interface InviteProps {
 /** Shown when nobody has generated a report for a handle yet: a link to send them. */
 export function Invite({ handle, link }: InviteProps) {
   const [copied, setCopied] = useState<boolean | null>(null)
-  const message = `Did AI change the way you code? Make your Pre/Post report and see:`
+  const message = `Did AI change the way you code? Make your Shift report and see:`
   const copy = () => navigator.clipboard.writeText(`${message} ${link}`).then(() => setCopied(true), () => setCopied(false))
 
   return (
     <div data-theme="now" className="flex min-h-dvh flex-col bg-base-100 font-now text-base-content">
       <header className="flex items-center border-b border-base-300 px-4 py-3 sm:px-8">
-        <Link to="/" className="text-base font-extrabold tracking-tight sm:text-lg">Pre<span className="text-muted">/</span>Post</Link>
+        <Link to="/" className="py-1"><Logo /></Link>
       </header>
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-8 px-4 py-16">
         <div className="flex flex-col gap-4">

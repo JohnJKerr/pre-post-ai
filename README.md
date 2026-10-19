@@ -1,4 +1,4 @@
-# Pre/Post
+# Shift
 
 Compares a developer's GitHub activity before and after AI coding went mainstream: a one-page report, a 0–100 shift score with a verdict, and share cards. Metadata only — see the handoff brief for the hard rules.
 
@@ -23,7 +23,7 @@ server/            reference back end: windows, metrics, score, report builder, 
                    The mock API and Storybook run it; the real API ports it. The app never imports it (lint rule).
 src/api/           contract.ts (the API types), fetch client, TanStack Query hooks
 src/charts/        TanStack Charts definitions and language colours
-src/features/      report sections, share panel and cards, invite, cut-off and sign-in form: render what the API returns
+src/features/      Shift logo, report sections, share panel and cards, invite, cut-off and sign-in form: render what the API returns
 src/pages/         routed pages: /, /generate, /generating, /r/:handle, /sample
 src/lib/           display formatting
 src/mocks/         MSW handlers and mock sign-in standing in for the API

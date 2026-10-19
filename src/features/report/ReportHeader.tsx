@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { Logo } from '../brand/Logo'
 
 const icon = { 'aria-hidden': true, width: 18, height: 18, viewBox: '0 0 18 18', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
 
@@ -42,8 +43,8 @@ export function ReportHeader({ handle, isSample, sharePanel, onDownload, downloa
   return (
     <header className="navbar sticky top-0 z-50 min-h-0 gap-3 border-b border-base-300 bg-base-100/95 px-4 py-2 backdrop-blur sm:px-8">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <Link to="/" className="whitespace-nowrap text-base font-extrabold tracking-tight sm:text-lg">
-          Pre<span className="text-muted">/</span>Post
+        <Link to="/" className="shrink-0 py-1">
+          <Logo />
         </Link>
         <span aria-hidden="true" className="hidden h-5 w-px bg-base-300 sm:block" />
         <div className="flex min-w-0 items-center gap-2">

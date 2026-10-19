@@ -1,5 +1,6 @@
 // Shown while GitHub computes stats/* (it answers 202 until ready). Skeletons, not spinners.
 import { EraCell } from './era'
+import { Logo } from '../brand/Logo'
 
 const Bone = ({ className }: { className: string }) => <div className={`skeleton ${className}`} />
 
@@ -17,7 +18,7 @@ export function ReportSkeleton({ message = 'Reading your GitHub metadata…' }: 
   return (
     <div aria-busy="true" aria-live="polite" className="bg-base-100">
       <div className="sticky top-0 z-50 flex items-center gap-3 border-b border-base-300 bg-base-100/95 px-4 py-3 sm:px-8">
-        <p className="text-base font-extrabold tracking-tight sm:text-lg">Pre<span className="text-muted">/</span>Post</p>
+        <p className="shrink-0 py-1"><Logo /></p>
         <Bone className="h-7 w-7 shrink-0 rounded-full" />
         <Bone className="h-4 w-24" />
       </div>

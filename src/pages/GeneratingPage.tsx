@@ -5,6 +5,7 @@ import { authApi } from '../api/reports'
 import { useGeneration } from '../api/useReports'
 import { lastCutoff } from '../features/generate/cutoffs'
 import { ReportSkeleton } from '../features/report/ReportSkeleton'
+import { Logo } from '../features/brand/Logo'
 
 /** /generating?id=…, where sign-in lands: polls the generation, then shows the report. */
 export function GeneratingPage() {
@@ -34,7 +35,7 @@ function Ending({ title, message, action }: { title: string; message: string; ac
   return (
     <div data-theme="now" className="flex min-h-dvh flex-col bg-base-100 font-now text-base-content">
       <header className="flex items-center border-b border-base-300 px-4 py-3 sm:px-8">
-        <Link to="/" className="text-base font-extrabold tracking-tight sm:text-lg">Pre<span className="text-muted">/</span>Post</Link>
+        <Link to="/" className="py-1"><Logo /></Link>
       </header>
       <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-5 px-4 py-16">
         <h1 className="text-4xl font-extrabold tracking-tight">{title}</h1>

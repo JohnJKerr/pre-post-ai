@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router'
 import { GenerateForm } from '../features/generate/GenerateForm'
 import { isSignInError } from '../features/generate/cutoffs'
+import { Logo } from '../features/brand/Logo'
 
 /** / and /generate: pick a cut-off and sign in. The API sends a bad cut-off back to /generate?error=…. */
 export function HomePage() {
@@ -10,7 +11,7 @@ export function HomePage() {
   return (
     <div data-theme="now" className="flex min-h-dvh flex-col bg-base-100 font-now text-base-content">
       <header className="flex items-center border-b border-base-300 px-4 py-3 sm:px-8">
-        <Link to="/" className="text-base font-extrabold tracking-tight sm:text-lg">Pre<span className="text-muted">/</span>Post</Link>
+        <Link to="/" className="py-1"><Logo /></Link>
       </header>
       <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-10 px-4 py-16 sm:px-8">
         <div className="flex max-w-3xl flex-col gap-5">

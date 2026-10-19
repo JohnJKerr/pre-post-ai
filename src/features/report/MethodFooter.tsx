@@ -27,7 +27,7 @@ export function MethodFooter({ weeks, isSample }: { weeks: number; isSample: boo
           ))}
         </dl>
         <p className="flex flex-wrap justify-between gap-2 font-now-mono text-xs text-muted">
-          <span>Pre/Post{isSample && ' · sample data'}</span>
+          <span>Shift{isSample && ' · sample data'}</span>
           <span>Built on GitHub metadata only</span>
         </p>
       </div>
