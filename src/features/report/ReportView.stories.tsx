@@ -22,14 +22,14 @@ const meta = preview.meta({
 /** Every control live. Start here to try configurations. */
 export const Playground = meta.story({})
 
-/** The handoff fixture: 78, "I built a software factory". */
+/** The sample's updated scoring: 69, "I'm a machine (literally)". */
 export const Sample = meta.story({ args: PRESETS.sample })
 
-export const StillHandCrafting = meta.story({ args: PRESETS.stillHandCrafting })
+export const RobotArms = meta.story({ args: PRESETS.robotArms })
 
-export const PairProgrammer = meta.story({ args: PRESETS.pairProgrammer })
+export const Cyborg = meta.story({ args: PRESETS.cyborg })
 
-/** Out-of-hours share drops 10+ points: "…and I got my evenings back". */
+/** Out-of-hours share drops 10+ points in the comparison. */
 export const EveningsBack = meta.story({ args: PRESETS.eveningsBack })
 
 /** Edge case: no pre-AI activity, so multipliers are undefined and score 0. */

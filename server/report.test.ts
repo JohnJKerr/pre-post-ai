@@ -58,23 +58,21 @@ describe('WhenDerivingTheSampleReport', () => {
     expect(shift.newLanguages.sort()).toEqual(['Go', 'Python', 'Rust', 'Swift'])
   })
 
-  it('Scores_78_and_built_a_software_factory', () => {
+  it('Scores_69_and_is_a_machine', () => {
     const points = Object.fromEntries(Object.entries(score.parts).map(([k, p]) => [k, p.points]))
-    expect(points).toEqual({ output: 34, projects: 9, languages: 10, hours: 25 })
-    expect(score.total).toBe(78)
-    expect(score.verdict).toBe('I built a software factory')
-    expect(score.tag).toBe('and it runs nights and weekends')
+    expect(points).toEqual({ output: 20, projects: 9, languages: 20, time: 20 })
+    expect(score.total).toBe(69)
+    expect(score.verdict).toBe("I'm a machine (literally)")
   })
 })
 
 describe('WhenAWindowHasNoEligibleRepos', () => {
-  it('Hides_the_punch_card_and_leaves_hours_out_of_the_score', () => {
+  it('Hides_the_punch_card_and_keeps_active_days_in_the_score', () => {
     const profile = sampleProfile()
     profile.repos = profile.repos.map((r) => ({ ...r, punchCard: r.punchCard === 'pre' ? null : r.punchCard }))
     const { pre, score } = buildReport(profile)
     expect(pre.punch).toBeNull()
     expect(pre.coverage).toEqual({ eligible: 0, total: 5, share: 0 })
-    expect(score.parts.hours.points).toBe(0)
-    expect(score.tag).toBeNull()
+    expect(score.parts.time.points).toBe(20)
   })
 })

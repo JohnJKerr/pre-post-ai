@@ -110,8 +110,8 @@ export const scenarioReport = (args: Partial<ScenarioArgs> = {}) => buildReport(
 /** Named configurations worth eyeballing. */
 export const PRESETS = {
   sample: {},
-  stillHandCrafting: { handle: 'steady-dev', isSample: false, postGrowth: 0.2, postProjects: 5, hours: 'unchanged' },
-  pairProgrammer: { handle: 'pair-dev', isSample: false, postGrowth: 0.45, postProjects: 7, hours: 'unchanged' },
+  robotArms: { handle: 'steady-dev', isSample: false, postGrowth: 0.2, postProjects: 5, hours: 'unchanged' },
+  cyborg: { handle: 'pair-dev', isSample: false, postGrowth: 0.45, postProjects: 7, hours: 'unchanged' },
   eveningsBack: { handle: 'calm-dev', isSample: false, hours: 'evenings back' },
   noPreActivity: { handle: 'new-dev', isSample: false, preActivity: false },
   noPunchCardRepos: { handle: 'team-dev', isSample: false, prePunchCard: false, postPunchCard: false },

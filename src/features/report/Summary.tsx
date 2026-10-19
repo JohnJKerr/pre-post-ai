@@ -1,17 +1,17 @@
 import { Link } from 'react-router'
-import { date, signed, times } from '../../lib/format'
+import { date, times } from '../../lib/format'
 import type { Report } from '../../api/contract'
 import { summarySentence } from './copy'
+import { VerdictArt } from './VerdictArt'
 
 function ScoreCard({ report }: { report: Report }) {
   const { shift, score } = report
   const { parts } = score
-  const hours = shift.hoursShift == null ? 'Out of hours: no data' : `Out of hours ${signed(Math.round(shift.hoursShift))} pts`
   const rows = [
-    [`Lines ${times(shift.linesX, '(no pre-AI data)')}`, parts.output],
+    [`Output · ${times(shift.commitsX, '(no pre-AI data)')} commits, ${times(shift.linesX, '(no pre-AI data)')} lines`, parts.output],
     [`Projects ${times(shift.projectsX, '(no pre-AI data)')}`, parts.projects],
     [`New languages: ${shift.newLanguages.length}`, parts.languages],
-    [hours, parts.hours],
+    [`Active days ${times(shift.activeDaysX, '(no pre-AI data)')}`, parts.time],
   ] as const
   return (
     <div className="flex flex-col gap-5 rounded-box border border-base-300 bg-base-200 p-5 sm:p-6">
@@ -86,7 +86,7 @@ function Ladder({ score: { total: score, rung, ladder } }: { score: Report['scor
 function CutoffNote({ report: { cutoff, isSample } }: { report: Report }) {
   return (
     <div className="flex flex-col gap-1 sm:items-end sm:text-right">
-      <p className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">Cut-off</p>
+      <p className="text-sm font-medium text-muted">Cut-off</p>
       <p className="text-sm font-semibold sm:text-base">{cutoff.label} · {date(cutoff.date)}</p>
       {isSample
         ? <Link to="/generate" className="link text-sm text-muted">Make your own report</Link>
@@ -101,19 +101,15 @@ export function Summary({ report }: { report: Report }) {
     <section aria-labelledby="verdict" className="bg-base-100">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-10 px-4 py-10 sm:gap-14 sm:px-8 sm:py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <p className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">Before &amp; after AI</p>
-            <p className="text-sm text-muted sm:text-base">{weeks} weeks either side of the cut-off, from your GitHub metadata.</p>
-          </div>
+          <p className="text-sm text-muted sm:text-base">{weeks} weeks either side of the cut-off, from your GitHub metadata.</p>
           <CutoffNote report={report} />
         </div>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-14">
           <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
-            <p className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">Verdict</p>
             <h1 id="verdict" className="text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.03em] sm:text-7xl" style={{ textWrap: 'balance' }}>
               {score.verdict}
             </h1>
-            {score.tag && <p className="text-lg font-medium sm:text-2xl">…{score.tag}.</p>}
+            <VerdictArt rung={score.rung} className="h-52 w-52 self-center sm:h-64 sm:w-64 lg:self-start" />
             <p className="max-w-[52ch] text-base text-muted sm:text-lg">{summarySentence(report)}</p>
           </div>
           <ScoreCard report={report} />

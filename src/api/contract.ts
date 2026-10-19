@@ -99,7 +99,7 @@ export interface WindowSummary {
   punch: Punch | null
 }
 
-export type ScorePart = 'output' | 'projects' | 'languages' | 'hours'
+export type ScorePart = 'output' | 'projects' | 'languages' | 'time'
 
 export interface Shift {
   /** post ÷ pre lines added; null when there was nothing before the cut-off */
@@ -108,6 +108,8 @@ export interface Shift {
   commitsX: number | null
   /** post ÷ pre out-of-hours share; null without punch data on both sides */
   outOfHoursX: number | null
+  /** post ÷ pre active days; null without pre-AI activity */
+  activeDaysX: number | null
   newLanguages: string[]
   /** out-of-hours change in percentage points; null without punch data on both sides */
   hoursShift: number | null
@@ -120,8 +122,6 @@ export interface Score {
   /** index into ladder */
   rung: number
   verdict: string
-  /** "and it runs nights and weekends"; null when hours can't be compared */
-  tag: string | null
   /** every rung, lowest first, so the page can draw the ladder */
   ladder: { min: number; verdict: string }[]
 }

@@ -15,7 +15,6 @@ export function HomePage() {
       </header>
       <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col justify-center gap-10 px-4 py-16 sm:px-8">
         <div className="flex max-w-3xl flex-col gap-5">
-          <p className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">Before &amp; after AI</p>
           <h1 className="text-[2.6rem] font-extrabold leading-[0.95] tracking-[-0.03em] sm:text-7xl" style={{ textWrap: 'balance' }}>
             Did AI change the way you code?
           </h1>

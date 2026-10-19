@@ -28,12 +28,13 @@ export function buildReport(profile: ProfileData): Report {
     shift: {
       linesX: s.linesX,
       projectsX: s.projectsX,
-      commitsX: ratio(post.commits, pre.commits),
+      commitsX: s.commitsX,
       outOfHoursX: pre.punch && post.punch ? ratio(post.punch.combined, pre.punch.combined) : null,
+      activeDaysX: s.activeDaysX,
       newLanguages: s.newLanguages,
       hoursShift: s.hoursShift,
     },
-    score: { total: s.score, parts, rung: s.rung, verdict: s.verdict, tag: s.tag, ladder: LADDER.map((r) => ({ ...r })) },
+    score: { total: s.score, parts, rung: s.rung, verdict: s.verdict, ladder: LADDER.map((r) => ({ ...r })) },
     scales: {
       weekMax: max(both.flatMap((x) => x.weekly.map((w) => w.a))),
       projectMax: max(both.flatMap((x) => x.projects.map((p) => p.lines))),

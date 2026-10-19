@@ -22,14 +22,13 @@ export function Invite({ handle, link }: InviteProps) {
       </header>
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-8 px-4 py-16">
         <div className="flex flex-col gap-4">
-          <p className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">No report yet</p>
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight break-words sm:text-5xl">@{handle} hasn’t made their report yet</h1>
           <p className="text-base text-muted sm:text-lg">
             Send them this link. Once they connect GitHub and make their report, it shows up at the same address.
           </p>
         </div>
         <div className="flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-4 sm:p-5">
-          <label htmlFor="invite" className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">Invite</label>
+          <label htmlFor="invite" className="text-sm font-medium text-muted">Invite</label>
           <textarea id="invite" readOnly rows={3} className="textarea w-full resize-none" value={`${message} ${link}`} onFocus={(e) => e.currentTarget.select()} />
           <div className="flex flex-wrap items-center gap-2">
             <button type="button" className="btn btn-neutral btn-sm" onClick={copy}>{copied ? 'Copied' : 'Copy invite'}</button>

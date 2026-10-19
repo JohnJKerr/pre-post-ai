@@ -39,7 +39,7 @@ export function GenerateForm({ initialCutoff = DEFAULT_CUTOFF.date, error = null
       <CutoffSelect value={cutoff} onChange={(d) => (setCutoff(d), setProblem(null))} />
       {mock && (
         <div className="flex w-full flex-col gap-2 sm:w-80">
-          <label htmlFor="handle" className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">GitHub handle (mock sign-in)</label>
+          <label htmlFor="handle" className="text-sm font-medium text-muted">GitHub handle (mock sign-in)</label>
           <label className="input w-full">
             <span className="text-muted">@</span>
             <input id="handle" autoComplete="username" spellCheck={false} placeholder="your-handle" value={handle} onChange={(e) => (setHandle(e.target.value), setProblem(null))} />

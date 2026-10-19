@@ -1,80 +1,100 @@
 import { describe, expect, it } from 'vitest'
 import { scoreShift, type ScoreSide } from './score'
-import { languageShares, USED_THRESHOLD } from './metrics'
+import { languageShares } from './metrics'
 import type { RepoActivity } from './types'
 
 const GivenAWindowSummary = (overrides: Partial<ScoreSide> = {}): ScoreSide => ({
   added: 10_000,
+  commits: 500,
   projectCount: 4,
-  usedLanguages: ['TypeScript'],
+  languages: [{ language: 'TypeScript', share: 1 }],
+  activeDays: 100,
   outOfHours: 0.2,
   ...overrides,
 })
 
 describe('WhenScoringTheShift', () => {
-  it('Sample_developer_scores_78_and_built_a_software_factory', () => {
-    const pre = GivenAWindowSummary({ added: 40_459, projectCount: 5, usedLanguages: ['C#', 'TypeScript', 'Shell', 'JavaScript', 'SQL'], outOfHours: 0.122 })
+  it('Sample_developer_scores_69_and_is_a_machine', () => {
+    const pre = GivenAWindowSummary({
+      added: 40_459,
+      commits: 638,
+      projectCount: 5,
+      languages: [{ language: 'TypeScript', share: 0.7 }],
+      activeDays: 161,
+      outOfHours: 0.122,
+    })
     const post = GivenAWindowSummary({
       added: 226_832,
+      commits: 1_604,
       projectCount: 12,
-      usedLanguages: ['TypeScript', 'C#', 'Python', 'Go', 'Rust', 'Swift', 'SQL', 'Shell'],
+      languages: [
+        { language: 'TypeScript', share: 0.4 },
+        { language: 'Python', share: 0.2 },
+        { language: 'Go', share: 0.15 },
+        { language: 'Rust', share: 0.13 },
+        { language: 'Swift', share: 0.12 },
+      ],
+      activeDays: 277,
       outOfHours: 0.546,
     })
     const shift = scoreShift(pre, post)
-    expect(shift.parts).toEqual({ output: 34, projects: 9, languages: 10, hours: 25 })
-    expect(shift.score).toBe(78)
-    expect(shift.verdict).toBe('I built a software factory')
-    expect(shift.tag).toBe('and it runs nights and weekends')
+    expect(shift.parts).toEqual({ output: 20, projects: 9, languages: 20, time: 20 })
+    expect(shift.score).toBe(69)
+    expect(shift.verdict).toBe("I'm a machine (literally)")
   })
 
-  it('No_growth_scores_0_and_lands_on_still_hand_crafting', () => {
+  it('No_growth_scores_0_and_lands_on_artisan', () => {
     const side = GivenAWindowSummary()
     const shift = scoreShift(side, side)
     expect(shift.score).toBe(0)
-    expect(shift.verdict).toBe("I'm still hand-crafting")
-    expect(shift.tag).toBe('and I still clock off on time')
+    expect(shift.verdict).toBe("I'm an artisan")
   })
 
   it('Each_part_caps_at_its_maximum', () => {
-    const pre = GivenAWindowSummary({ added: 1, projectCount: 1, usedLanguages: [], outOfHours: 0 })
-    const post = GivenAWindowSummary({ added: 1_000_000, projectCount: 100, usedLanguages: ['A', 'B', 'C', 'D', 'E', 'F'], outOfHours: 1 })
+    const pre = GivenAWindowSummary({ added: 1, commits: 1, projectCount: 1, languages: [], activeDays: 1 })
+    const post = GivenAWindowSummary({
+      added: 1_000_000,
+      commits: 1_000_000,
+      projectCount: 100,
+      languages: ['A', 'B', 'C', 'D', 'E', 'F'].map((language) => ({ language, share: 1 / 6 })),
+      activeDays: 100,
+    })
     const shift = scoreShift(pre, post)
-    expect(shift.parts).toEqual({ output: 45, projects: 15, languages: 10, hours: 30 })
+    expect(shift.parts).toEqual({ output: 40, projects: 15, languages: 20, time: 25 })
     expect(shift.score).toBe(100)
-    expect(shift.verdict).toBe('I run a lights-out factory')
+    expect(shift.verdict).toBe('I started the robot uprising')
   })
 
-  it('An_out_of_hours_drop_of_10_points_gives_I_got_my_evenings_back', () => {
+  it('Out_of_hours_change_is_reported_but_does_not_affect_score', () => {
     const shift = scoreShift(GivenAWindowSummary({ outOfHours: 0.3 }), GivenAWindowSummary({ outOfHours: 0.2 }))
     expect(shift.hoursShift).toBeCloseTo(-10)
-    expect(shift.parts.hours).toBe(6)
-    expect(shift.tag).toBe('and I got my evenings back')
-  })
-
-  it('A_rise_without_reaching_40_percent_still_clocks_off_on_time', () => {
-    const shift = scoreShift(GivenAWindowSummary({ outOfHours: 0.1 }), GivenAWindowSummary({ outOfHours: 0.35 }))
-    expect(shift.tag).toBe('and I still clock off on time')
+    expect(shift.score).toBe(0)
   })
 
   it('No_pre_AI_activity_leaves_multipliers_undefined_and_scores_them_0', () => {
-    const shift = scoreShift(GivenAWindowSummary({ added: 0, projectCount: 0, usedLanguages: [] }), GivenAWindowSummary())
+    const shift = scoreShift(
+      GivenAWindowSummary({ added: 0, commits: 0, projectCount: 0, languages: [], activeDays: 0 }),
+      GivenAWindowSummary({ languages: [] }),
+    )
     expect(shift.linesX).toBeNull()
+    expect(shift.commitsX).toBeNull()
     expect(shift.projectsX).toBeNull()
-    expect(shift.parts.output).toBe(0)
-    expect(shift.parts.projects).toBe(0)
+    expect(shift.activeDaysX).toBeNull()
+    expect(shift.parts).toEqual({ output: 0, projects: 0, languages: 0, time: 0 })
   })
 })
 
 describe('WhenFindingNewLanguages', () => {
-  it('A_language_under_2_percent_before_and_over_2_percent_after_counts_as_new', () => {
+  it('A_language_under_1_percent_before_and_over_5_percent_after_counts_as_new', () => {
     const repos: RepoActivity[] = [
       { name: 'main', languages: { TypeScript: 0.99, Go: 0.01 }, share: { pre: 1, post: 0.5 }, punchCard: null, startedIn: null },
       { name: 'svc', languages: { Go: 1 }, share: { pre: 0, post: 0.5 }, punchCard: null, startedIn: 'post' },
     ]
-    const used = (era: 'pre' | 'post') => languageShares(repos, era).filter((l) => l.share >= USED_THRESHOLD).map((l) => l.language)
-    expect(used('pre')).toEqual(['TypeScript'])
-    const shift = scoreShift(GivenAWindowSummary({ usedLanguages: used('pre') }), GivenAWindowSummary({ usedLanguages: used('post') }))
+    const shift = scoreShift(
+      GivenAWindowSummary({ languages: languageShares(repos, 'pre') }),
+      GivenAWindowSummary({ languages: languageShares(repos, 'post') }),
+    )
     expect(shift.newLanguages).toEqual(['Go'])
-    expect(shift.parts.languages).toBe(2.5)
+    expect(shift.parts.languages).toBe(5)
   })
 })

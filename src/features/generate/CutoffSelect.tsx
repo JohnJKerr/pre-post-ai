@@ -11,7 +11,7 @@ export function CutoffSelect({ value, onChange }: { value: string; onChange: (da
 
   return (
     <div className="flex w-full flex-col gap-2 sm:w-80">
-      <label htmlFor="cutoff" className="font-now-mono text-[11px] uppercase tracking-[0.2em] text-muted">Cut-off</label>
+      <label htmlFor="cutoff" className="text-sm font-medium text-muted">Cut-off</label>
       <select
         id="cutoff"
         className="select w-full"

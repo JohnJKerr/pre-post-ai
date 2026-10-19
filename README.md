@@ -51,4 +51,4 @@ With the mock (the default), the form asks for a handle and records the generati
 
 ## Storybook
 
-`Report/Full report → Playground` has controls for window length, post-AI growth, project count, hours pattern, punch-card eligibility and no pre-AI activity. Named presets cover each verdict and edge case. `Pages/*` stories run the routed pages against the mock API with per-story handler overrides (generating and its endings, 404 invite, 5xx, a cut-off the API rejected).
+`Report/Full report → Playground` has controls for window length, post-AI growth, project count, hours pattern, punch-card eligibility and no pre-AI activity. Named presets show several verdicts and edge cases; `Report/Verdict art` has a story for each of the six images. `Pages/*` stories run the routed pages against the mock API with per-story handler overrides (generating and its endings, 404 invite, 5xx, a cut-off the API rejected).

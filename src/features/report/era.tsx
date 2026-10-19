@@ -22,10 +22,10 @@ export function MetricBar({ title, change, unit }: { title: string; change: stri
   return (
     <div className="col-span-2 grid grid-cols-2 bg-bar text-white">
       <div className="min-w-0 py-2.5 pl-4 pr-3 sm:px-10 sm:py-3 lg:px-14">
-        <h3 className="ml-auto w-full max-w-[600px] font-now-mono text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 sm:text-xs">{title}</h3>
+        <h3 className="ml-auto w-full max-w-[600px] text-sm font-semibold text-white sm:text-base">{title}</h3>
       </div>
       <div className="min-w-0 py-2.5 pl-3 pr-4 sm:px-10 sm:py-3 lg:px-14">
-        <p className="mr-auto w-full max-w-[600px] text-right font-now-mono text-[11px] uppercase tracking-[0.18em] text-white/65 sm:text-xs">
+        <p className="mr-auto w-full max-w-[600px] text-right text-sm text-white/70 sm:text-base">
           <span className="font-semibold text-white">{change}</span> {unit}
         </p>
       </div>

@@ -57,7 +57,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
       <section className={`flex flex-col justify-between ${tint.pre.bg} py-12 pr-14 pl-16`}>
         <div className="flex flex-col gap-2" style={{ height: square ? 250 : 150 }}>
           <p className={`text-[32px] font-bold tracking-tight ${tint.pre.ink}`}>Pre-AI</p>
-          <p className={`font-now-mono text-[15px] uppercase tracking-[0.16em] ${tint.pre.muted}`}>{range(report.pre.range)}</p>
+          <p className={`text-[17px] ${tint.pre.muted}`}>{range(report.pre.range)}</p>
         </div>
         <div className="flex flex-col gap-3">
           <p className="flex items-baseline gap-3">
@@ -76,12 +76,11 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
       {/* post-AI */}
       <section className={`flex flex-col justify-between ${tint.post.bg} py-12 pr-12 pl-18`}>
         <div className="flex flex-col gap-2" style={{ height: square ? 250 : 150 }}>
-          <p className={`flex items-baseline gap-4 font-now-mono text-[14px] uppercase tracking-[0.16em] ${tint.post.muted}`}>
-            <span className={`font-now text-[22px] font-bold normal-case tracking-tight ${tint.post.ink}`}>Post-AI</span>
+          <p className={`flex items-baseline gap-4 text-[17px] ${tint.post.muted}`}>
+            <span className={`text-[22px] font-bold tracking-tight ${tint.post.ink}`}>Post-AI</span>
             {range(report.post.range)}
           </p>
           <p className={`${square ? 'text-[40px]' : 'text-[34px]'} font-extrabold leading-[1.05] tracking-[-0.02em]`}>“{report.score.verdict}”</p>
-          {report.score.tag && <p className={`text-[17px] font-medium ${tint.post.ink}`}>…{report.score.tag}</p>}
         </div>
         <div className="flex flex-col gap-3">
           <p className="flex items-baseline gap-3">
@@ -106,7 +105,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
         style={{ left: half, top: square ? 360 : 262 }}
       >
         <span className="text-[30px] font-bold">{times(shift.linesX)}</span>
-        <span className="text-[12px] uppercase tracking-[0.12em] text-white/70">the code</span>
+        <span className="text-[14px] text-white/70">the code</span>
       </p>
     </div>
   )
