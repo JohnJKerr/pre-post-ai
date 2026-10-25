@@ -14,7 +14,7 @@ npm test             # back-end reference logic (metric rules, score, windows) a
 npm run build
 ```
 
-The app always calls the real API. `VITE_API_URL=https://localhost:7194/api npm run dev` runs against the local .NET API.
+The app always calls the real API. `npm run dev` uses the local .NET API at `https://localhost:7194/api` (`.env.development`); override it in `.env.local`.
 
 ## Layout
 
