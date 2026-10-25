@@ -1,4 +1,4 @@
-// Someone's saved report at /r/:handle, against the mock API with per-story overrides.
+// Someone's saved report at /r/:handle, against Storybook's stand-in API with per-story overrides.
 import { delay, http, HttpResponse } from 'msw'
 import preview from '../../.storybook/preview'
 import { API_URL } from '../api/config'

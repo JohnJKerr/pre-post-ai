@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router'
-import { API_MOCK } from '../api/config'
 import { authApi } from '../api/reports'
 import { useGeneration } from '../api/useReports'
 import { lastCutoff } from '../features/generate/cutoffs'
@@ -69,6 +68,5 @@ function Frame({ children }: { children: ReactNode }) {
 
 /** Straight back through GitHub with the cut-off they chose; it's quick once the app is authorised. */
 function SignInAgain() {
-  if (API_MOCK) return <Link to="/generate" className="btn btn-neutral">Sign in again</Link>
   return <a href={authApi.signInUrl(lastCutoff())} className="btn btn-neutral">Sign in again</a>
 }

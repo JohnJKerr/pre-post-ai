@@ -7,5 +7,5 @@ const meta = preview.meta({
   parameters: { route: '/sample', path: '/sample' },
 })
 
-/** GET /sample-report from the mock: the handoff fixture. */
+/** GET /sample-report from Storybook's stand-in API: the handoff fixture. */
 export const Default = meta.story({})

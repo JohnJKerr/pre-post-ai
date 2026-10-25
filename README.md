@@ -2,32 +2,31 @@
 
 Compares a developer's GitHub activity before and after AI coding went mainstream: a one-page report, a 0–100 shift score with a verdict, and share cards. Metadata only — see the handoff brief for the hard rules.
 
-Stack: Vite, React 19, Tailwind v4 + daisyUI 5, TanStack Charts 1.1, TanStack Query, React Router, MSW, Storybook 10, Vitest.
+Stack: Vite, React 19, Tailwind v4 + daisyUI 5, TanStack Charts 1.1, TanStack Query, React Router, Storybook 10 with MSW, Vitest.
 
 ## Run
 
 ```sh
 npm install
-npm run dev          # app on :5173, reports API mocked by MSW
+npm run dev          # app on :5173, against the API in VITE_API_URL
 npm run storybook    # stories on :6006
 npm test             # back-end reference logic (metric rules, score, windows) and the cut-off check
 npm run build
 ```
 
-`VITE_API_MOCK=false VITE_API_URL=https://localhost:7194/api npm run dev` runs against the local .NET API.
+The app always calls the real API. `VITE_API_URL=https://localhost:7194/api npm run dev` runs against the local .NET API.
 
 ## Layout
 
 ```
 server/            reference back end: windows, metrics, score, report builder, sample data + tests.
-                   The mock API and Storybook run it; the real API ports it. The app never imports it (lint rule).
+                   Storybook runs it; the real API ports it. The app never imports it (lint rule).
 src/api/           contract.ts (the API types), fetch client, TanStack Query hooks
 src/charts/        TanStack Charts definitions and language colours
 src/features/      Shift logo, report sections, share panel and cards, invite, cut-off and sign-in form: render what the API returns
 src/pages/         routed pages: /, /generate, /generating, /r/:handle, /sample
 src/lib/           display formatting
-src/mocks/         MSW handlers and mock sign-in standing in for the API
-src/stories/       scenario builder for Storybook
+src/stories/       scenario builder and the MSW handlers standing in for the API in Storybook
 ```
 
 ## API
@@ -47,10 +46,8 @@ There's no session and no cookie: every fetch is a plain GET, the only kind the 
 
 Pages: `/` and `/generate` pick a cut-off and sign in · `/generating?id=` polls, then moves on to the report · `/r/:handle` · `/sample`.
 
-Against the real API, set `VITE_API_MOCK=false` and `VITE_API_URL` (see `.env.example`; production is `https://shift-api.developkerr.com/api`). Point it at the API's own origin, not a proxy: GitHub's callback is built from the host sign-in arrives on.
-
-With the mock (the default), the form asks for a handle and records the generation itself (`src/mocks/signIn.ts`); `GET /generations/:id` stays pending for 2.5 s, then saves seeded activity in this browser's `localStorage`. The handles `nothing-yet` and `broken` play out the empty and failed endings.
+Set `VITE_API_URL` (see `.env.example`; production is `https://shift-api.developkerr.com/api`). Point it at the API's own origin, not a proxy: GitHub's callback is built from the host sign-in arrives on.
 
 ## Storybook
 
-`Report/Full report → Playground` has controls for window length, post-AI growth, project count, hours pattern, punch-card eligibility and no pre-AI activity. Named presets show several verdicts and edge cases; `Report/Verdict art` has a story for each of the six images. `Pages/*` stories run the routed pages against the mock API with per-story handler overrides (generating and its endings, 404 invite, 5xx, a cut-off the API rejected).
+`Report/Full report → Playground` has controls for window length, post-AI growth, project count, hours pattern, punch-card eligibility and no pre-AI activity. Named presets show several verdicts and edge cases; `Report/Verdict art` has a story for each of the six images. `Pages/*` stories run the routed pages against MSW handlers (`src/stories/handlers.ts`, worker in `.storybook/public`) with per-story overrides (generating and its endings, 404 invite, 5xx, a cut-off the API rejected).

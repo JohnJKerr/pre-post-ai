@@ -6,7 +6,6 @@ const meta = preview.meta({
   component: HomePage,
 })
 
-/** Storybook runs against the mock API, so this asks for a handle. See Generate form → Connect for the real button. */
 export const Default = meta.story({})
 
 /** "Try another cut-off" from a report. */

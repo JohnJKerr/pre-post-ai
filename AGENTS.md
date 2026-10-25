@@ -1,6 +1,6 @@
 # Shift (front end)
 
-Read `README.md` first: it covers running the app, the layout, the API contract and the mock.
+Read `README.md` first: it covers running the app, the layout, the API contract and Storybook's stand-in API.
 
 ## Rules
 

@@ -5,5 +5,5 @@ export default defineMain({
   stories: ['../src/**/*.stories.@(ts|tsx)'],
   addons: ['@storybook/addon-docs'],
   // serves mockServiceWorker.js for the MSW addon
-  staticDirs: ['../public'],
+  staticDirs: ['./public'],
 })

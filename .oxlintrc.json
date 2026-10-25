@@ -9,11 +9,11 @@
     {
       "files": ["src/**"],
       "rules": {
-        "no-restricted-imports": ["error", { "patterns": [{ "group": ["**/server/*"], "message": "The app renders the Report the API returns. Only the mock API and stories may run /server." }] }]
+        "no-restricted-imports": ["error", { "patterns": [{ "group": ["**/server/*"], "message": "The app renders the Report the API returns. Only stories may run /server." }] }]
       }
     },
     {
-      "files": ["src/mocks/**", "src/stories/**"],
+      "files": ["src/stories/**"],
       "rules": { "no-restricted-imports": "off" }
     }
   ]

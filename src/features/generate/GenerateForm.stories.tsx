@@ -8,13 +8,10 @@ const meta = preview.meta({
 })
 
 /** With the real API: submitting navigates to the API's GitHub sign-in with the cut-off. */
-export const Connect = meta.story({ args: { mock: false } })
-
-/** With the mock API: a handle stands in for GitHub. */
-export const Mock = meta.story({ args: { mock: true } })
+export const Connect = meta.story({})
 
 /** A custom date. */
-export const CustomCutoff = meta.story({ args: { mock: false, initialCutoff: '2024-06-01' } })
+export const CustomCutoff = meta.story({ args: { initialCutoff: '2024-06-01' } })
 
 /** Sent back by the API with ?error=invalid-cutoff. */
-export const InvalidCutoff = meta.story({ args: { mock: false, initialCutoff: '2024-02-30', error: 'invalid-cutoff' } })
+export const InvalidCutoff = meta.story({ args: { initialCutoff: '2024-02-30', error: 'invalid-cutoff' } })

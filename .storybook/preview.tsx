@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import addonMsw from 'msw-storybook-addon'
 import { useState, type ReactNode } from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router'
-import { handlers } from '../src/mocks/handlers'
+import { handlers } from '../src/stories/handlers'
 import '../src/index.css'
 
 function FreshQueryClient({ children }: { children: ReactNode }) {
@@ -20,7 +20,7 @@ export default definePreview({
     route: '/',
     path: '*',
   },
-  // the app's mock API, so page stories work unless a story overrides a handler
+  // a stand-in API, so page stories work unless a story overrides a handler
   beforeEach({ msw }) {
     msw.use(...handlers)
   },

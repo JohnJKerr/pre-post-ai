@@ -1,5 +1,4 @@
-// Client for the API (contract in ./contract.ts). With mocking on, MSW serves these
-// endpoints (see src/mocks).
+// Client for the API (contract in ./contract.ts).
 import { API_URL } from './config'
 import type { ApiErrorBody, Generation, Report } from './contract'
 

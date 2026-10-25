@@ -138,10 +138,3 @@ export function generateSample({ seed = SAMPLE_SEED, cutoffWeekStart = '2025-11-
     },
   }
 }
-
-/** Stable seed from a string, so the same handle and cut-off always produce the same mock data. */
-export function seedFrom(text: string) {
-  let h = 2166136261
-  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619)
-  return h >>> 0
-}
