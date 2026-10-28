@@ -1,9 +1,19 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router'
 import { authApi } from '../api/reports'
 import { useGeneration } from '../api/useReports'
 import { lastCutoff } from '../features/generate/cutoffs'
 import { Logo } from '../features/brand/Logo'
+
+const makingMessages = [
+  'Scouring for green squares…',
+  'Retrieving that side project with one commit…',
+  'Grabbing the project you abandoned…',
+  'Wading through some old slop…',
+  'Chasing after the robots…',
+  'Still going, did you need to generate so much code?',
+  'Checking that perfect side project that you never marketed…',
+]
 
 /** /generating?id=…, where sign-in lands: polls the generation, then shows the report. */
 export function GeneratingPage() {
@@ -31,11 +41,21 @@ function Generating({ id }: { id: string }) {
 
 /** Generation has no progress to report, so an indeterminate bar rather than a skeleton of a report that may never come. */
 function Making() {
+  const [messageIndex, setMessageIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setMessageIndex(index => (index + 1) % makingMessages.length)
+    }, 8000)
+    return () => window.clearInterval(interval)
+  }, [])
+
   return (
     <Frame>
-      <div aria-busy="true" aria-live="polite" className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
         <h1 className="text-4xl font-extrabold tracking-tight">Making your report</h1>
         <progress className="progress w-full text-post-mark" aria-label="Generating your report" />
+        <p role="status" aria-atomic="true" className="min-h-20 text-lg font-bold">{makingMessages[messageIndex]}</p>
         <p className="text-base text-muted sm:text-lg">Big accounts can take a few minutes. You can leave this page open.</p>
       </div>
     </Frame>

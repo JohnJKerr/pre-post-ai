@@ -14,7 +14,7 @@ const meta = preview.meta({
 const respond = (generation: Partial<Generation>) =>
   http.get(`${API_URL}/generations/:id`, () => HttpResponse.json<Generation>({ status: 'pending', handle: null, message: null, ...generation }))
 
-/** Still generating: an indeterminate bar while it polls every 2 s. */
+/** Still generating: an indeterminate bar and rotating messages while it polls every 2 s. */
 export const Pending = meta.story({
   beforeEach({ msw }) {
     msw.use(respond({ status: 'pending' }))
