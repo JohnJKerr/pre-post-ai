@@ -4,6 +4,7 @@ import { authApi } from '../api/reports'
 import { useGeneration } from '../api/useReports'
 import { lastCutoff } from '../features/generate/cutoffs'
 import { Logo } from '../features/brand/Logo'
+import { SiteFooter } from '../features/brand/SiteFooter'
 
 const makingMessages = [
   'Scouring for green squares…',
@@ -82,6 +83,7 @@ function Frame({ children }: { children: ReactNode }) {
         <Link to="/" className="py-1"><Logo /></Link>
       </header>
       <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-5 px-4 py-16">{children}</main>
+      <SiteFooter />
     </div>
   )
 }

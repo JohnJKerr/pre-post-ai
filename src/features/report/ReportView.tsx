@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { Report } from '../../api/contract'
+import { SiteFooter } from '../brand/SiteFooter'
 import { ShareCard } from '../share/ShareCard'
 import { SharePanel, type ShareSettings } from '../share/SharePanel'
 import { useCardDownload } from '../share/useCardDownload'
@@ -33,6 +34,7 @@ export function ReportView({ report, link }: ReportViewProps) {
       <Summary report={report} />
       <Comparison report={report} />
       <MethodFooter report={report} />
+      <SiteFooter />
 
       {/* full-size card, off screen, for the PNG download */}
       <div aria-hidden="true" inert className="pointer-events-none fixed top-0 left-[-20000px]">

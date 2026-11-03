@@ -2,6 +2,7 @@ import { Link, useSearchParams } from 'react-router'
 import { GenerateForm } from '../features/generate/GenerateForm'
 import { isSignInError } from '../features/generate/cutoffs'
 import { Logo } from '../features/brand/Logo'
+import { SiteFooter } from '../features/brand/SiteFooter'
 
 /** / and /generate: pick a cut-off and sign in. The API sends a bad cut-off back to /generate?error=…. */
 export function HomePage() {
@@ -27,6 +28,7 @@ export function HomePage() {
           <p className="text-sm text-muted"><Link to="/sample" className="link">See a sample report</Link></p>
         </div>
       </main>
+      <SiteFooter />
     </div>
   )
 }

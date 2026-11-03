@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { shareLinks } from '../share/links'
 import { Logo } from '../brand/Logo'
+import { SiteFooter } from '../brand/SiteFooter'
 
 interface InviteProps {
   handle: string
@@ -42,6 +43,7 @@ export function Invite({ handle, link }: InviteProps) {
           Is this you? <Link to="/generate" className="link">Make your report</Link>
         </p>
       </main>
+      <SiteFooter />
     </div>
   )
 }
